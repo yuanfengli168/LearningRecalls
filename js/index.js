@@ -1,26 +1,28 @@
+// // import saveObject from "./database";
+// import sessionStorage from "./session";
+
 const contentType = Object.freeze({
     todayTask: "Today Task",
     dailyQuizCreation: "Daily Quiz Creation",
 })
 
-const doms = {
+const initialDoms = {
     banners: document.querySelector(".banners"),
     bannersButtons: document.querySelectorAll(".banners button"),
     contents: document.querySelector(".contents"),
 }
 
+// UIs
 /**
  * find which banners button has active in its class, 
  * and determine which enum is current enum
  * return enum value
  */
 function findContent() {
-    var activeButton = doms.banners.querySelector(".active");
-    // console.log("activeButton: ", activeButton);
-    var activeButtonClass = activeButton.classList[0];
-    // console.log("activeButtonClass ", activeButtonClass);
+    var activeButton = initialDoms.banners.querySelector(".active") ?? null;
     var resultContentType = null;
-
+    var activeButtonClass = activeButton.classList[0];
+    
     switch (activeButtonClass) {
         case "todayTasks": 
             resultContentType = contentType.todayTask;
@@ -29,12 +31,9 @@ function findContent() {
             resultContentType = contentType.dailyQuizCreation;
             break;
     }
-
-    
-    // default we are on Today's Task page.
+ 
+    // default we are on Daily Quiz Creation.
     resultContentType = resultContentType === null ? contentType.todayTask : resultContentType;
-
-    // console.log(resultContentType);
     return resultContentType;
 }
 
@@ -47,39 +46,19 @@ function renderPage() {
         // case contentType.todayTask: 
         case "Today Task":
             contentHTML = returnTodayTasks();
-            // console.log("Today Tasks page!")
+            
             break;
         case "Daily Quiz Creation":
             contentHTML = returnDailyQuizCreation();
             break;
     }
 
-    doms.contents.innerHTML = contentHTML;
-}
-
-renderPage();
-
-function returnTodayTasks() {
-    return `
-        <div class="todayTaskContainer">
-            <div class="quiz">
-                <p>Up to recent 3 day's Quiz</p>
-            </div>
-            <div class="test">Last week's Test on Monday</div>
-            <div class="Exam">Last Month's Exam on First Week's Monday</div>
-        </div>
-    `;
+    initialDoms.contents.innerHTML = contentHTML;
 }
 
 function returnDailyQuizCreation() {
-    // Get today's date
-    const today = new Date();
-    const yyyy = today.getFullYear();
-    const mm = String(today.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed
-    const dd = String(today.getDate()).padStart(2, '0');
-
     // Format date as YYYY-MM-DD
-    const formattedDate = `${yyyy}-${mm}-${dd}`;
+    const formattedDate = getTodayDate();
 
 
     return `
@@ -92,7 +71,7 @@ function returnDailyQuizCreation() {
                 <div class="creation">
                     <h4>Create Quiz:</h4>
                     <p>Write your quiz in the input box below:</p>
-                    <textArea placeholder="Enter your content here:" rows="15" cols="50"></textArea>
+                    <textArea required placeholder="Enter your content here:" rows="15" cols="50"></textArea>
                 </div>
                 
                 <div class="answer">
@@ -107,7 +86,7 @@ function returnDailyQuizCreation() {
                     <h4>Tags</h4>
                     <input></input>
                 </div>
-                
+
                 <div class="history">
                     <p><b>Used Tags</b></p>
                     <div class="tabs">
@@ -134,34 +113,175 @@ function returnDailyQuizCreation() {
                     </div>
                 </div>
             </div>
+
             <div class="buttons">
-                <button>Save Quiz and Answer</button>
+                <button id="save">Save Quiz and Answer</button>
                 <button disabled>Update Quiz and Answer</button>
                 <button disabled>Append to Same Tag Today</button>
-                <button>Reset Quiz and Answer</button>
+                <button id="reset">Reset Quiz and Answer</button>
             </div>
 
         </div>
     `;
 }
 
-function handleClick(event) {
-    // console.log("button clicked: ", event.target.textContent);
+function returnTodayTasks() {
+    return `
+        <div class="todayTaskContainer">
+            <div class="quiz">
+                <p>Up to recent 3 day's Quiz</p>
+            </div>
+            <div class="test">Last week's Test on Monday</div>
+            <div class="Exam">Last Month's Exam on First Week's Monday</div>
+        </div>
+    `;
+}
+
+renderPage();
+
+// Data
+// return today's date in format: YYYY-MM-DD
+const postRenderDoms = {
+    textAreaOfQuiz : document.querySelector(".quizAndAnswer div.creation textArea"),
+    textAreaOfAnswer: document.querySelector(".quizAndAnswer div.answer textArea"),
+    tagsInput: document.querySelector(".input input"),
+    date: document.querySelector(".date input"),
+    buttons: document.querySelectorAll(".contents .buttons"),
+    saveButton: document.querySelector("button#save"),
+    resetButton: document.querySelector("button#reset"),
+}
+
+// return what user has typed for quiz
+function getQuizCreaionContent() {
+    return postRenderDoms.textAreaOfQuiz.value;
+};
+
+function getTodayDate() {
+    // Get today's date
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed
+    const dd = String(today.getDate()).padStart(2, '0');
+
+    // Format date as YYYY-MM-DD
+    const formattedDate = `${yyyy}-${mm}-${dd}`;
+    return formattedDate;
+}
+
+// return what user has typed for answer
+function getAnswerContent() {
+    return postRenderDoms.textAreaOfAnswer.value;
+};
+
+// return what user has typed in tags
+function getTagInputs() {
+    return postRenderDoms.tagsInput.value;;
+}
+
+// return what user has selected for the date
+function getSelectedDate() {
+    return postRenderDoms.date.value;
+}
+
+// return an object including all the content user typed.
+function createObjectOfInputs() {
+    var quiz = getQuizCreaionContent();
+    var answer = getAnswerContent();
+    var tag = getTagInputs();
+
+    if (quiz === "" || answer === "" || tag === "") {
+        window.alert("All fields must not be empty!");
+    } else {
+        const resultObj = {
+            quiz: quiz,
+            answer: answer,
+            tag: tag,
+            date: getSelectedDate(),
+        }
     
+        console.log(resultObj);
+        return resultObj;
+    }
+}
+
+// clear all inputs of user's input, date will return to today's date.
+function resetInputs() {
+    postRenderDoms.textAreaOfQuiz.value = "";
+    postRenderDoms.textAreaOfAnswer.value = "";
+    postRenderDoms.tagsInput.value = "";
+    postRenderDoms.date.value = getTodayDate();
+}
+
+// handle and change UI content based on banners button click
+function handleClick(event) {    
     // add active if not active found;
     if (event.target.classList.contains("active")) {
         return;
     } else {
-        // doms.banners.querySelector(".active");
-        var activeButton = doms.banners.querySelector(".active");
+        var activeButton = initialDoms.banners.querySelector(".active");
         activeButton.classList.remove("active");
-
         event.target.classList.add("active");
     }
 
     renderPage();
 }
 
-doms.bannersButtons.forEach(button => {
+
+// Commute to backend.
+// insert a object.
+function createSerialObject(obj) {
+    const resultObj = {
+        date: obj.date,
+        quizTags: obj.tag,
+        quizContent: obj.quiz,
+        quizAnswerContent: obj.answer,
+        hasFinished: false,
+        results: [],
+    }
+
+    return resultObj;
+}
+
+function saveToDataBase(obj) {
+
+}
+
+
+// EventListeners: 
+// banner buttons click
+initialDoms.bannersButtons.forEach(button => {
     button.addEventListener('click', handleClick);
 })
+
+// saveButton and return values.
+postRenderDoms.saveButton.addEventListener('click', function() {
+    // TODO: check if this quiz has been saved to database?
+
+    // Assume we will never update quiz
+    const obj = createObjectOfInputs();
+    const dataBaseObj = createSerialObject(obj);
+    const myLocalStorage = new localStorage(dataBaseObj);
+    myLocalStorage.saveToLocalStorage();
+
+    
+    console.log("starting to save to database")
+
+})
+
+// reset all the content of buttons.
+postRenderDoms.resetButton.addEventListener('click', function() {
+    resetInputs();
+})
+
+
+
+
+
+
+
+
+
+
+
+// TODO: 
+// in next version, write in ES6 classes method!!
