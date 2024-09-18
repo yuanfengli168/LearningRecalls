@@ -126,10 +126,33 @@ function returnDailyQuizCreation() {
 }
 
 function returnTodayTasks() {
+    // TODO: build getPreviousQuiz();
+    var previousQuiz = getPreviousQuiz("2024-09-17"); //dateStr: 2024-09-17
+    var date = "";
+    var quizContent = "";
+    var answerContent = "";
+
+    if (previousQuiz) {
+        date = previousQuiz.date;
+        quizContent = previousQuiz.quizContent;
+        // TODO later
+        // answerContent = previousQuiz.answerContent;
+    }
+
     return `
         <div class="todayTaskContainer">
             <div class="quiz">
                 <p>Up to recent 3 day's Quiz</p>
+                <div class="quiz-section">
+                    <div class="quiz-cards">
+                        <div class="card-content">
+                            <h1>Date: ${date}</h1>
+                            <p>${quizContent}</p>
+                        </div>
+                        <button class="take">Take quiz</button>
+                        <button disabled class="logs">Logs V</button>
+                    </div>
+                </div>
             </div>
             <div class="test">Last week's Test on Monday</div>
             <div class="Exam">Last Month's Exam on First Week's Monday</div>
@@ -141,6 +164,18 @@ renderPage();
 
 // Data
 // return today's date in format: YYYY-MM-DD
+function getPreviousQuiz(dateStr) {
+    const resultObj = {};
+    resultObj.date = dateStr;
+    
+    const localStorageObject = new localStorage();
+    var quiz = localStorageObject.getQuizByDate(dateStr);
+    resultObj.quizContent = quiz;
+
+
+    return resultObj;
+}
+
 const postRenderDoms = {
     textAreaOfQuiz : document.querySelector(".quizAndAnswer div.creation textArea"),
     textAreaOfAnswer: document.querySelector(".quizAndAnswer div.answer textArea"),
@@ -199,7 +234,6 @@ function createObjectOfInputs() {
             date: getSelectedDate(),
         }
     
-        console.log(resultObj);
         return resultObj;
     }
 }
@@ -264,7 +298,7 @@ postRenderDoms.saveButton.addEventListener('click', function() {
     myLocalStorage.saveToLocalStorage();
 
     
-    console.log("starting to save to database")
+    // console.log("starting to save to database")
 
 })
 
