@@ -1,6 +1,8 @@
 // // import saveObject from "./database";
 // import sessionStorage from "./session";
 
+const ROOT_USER_ID = '1001';
+
 const contentType = Object.freeze({
     todayTask: "Today Task",
     dailyQuizCreation: "Daily Quiz Creation",
@@ -265,6 +267,8 @@ function handleClick(event) {
 // insert a object.
 function createSerialObject(obj) {
     const resultObj = {
+        // TODO: change it later.
+        userID: ROOT_USER_ID,
         date: obj.date,
         quizTags: obj.tag,
         quizContent: obj.quiz,
@@ -276,9 +280,9 @@ function createSerialObject(obj) {
     return resultObj;
 }
 
-function saveToDataBase(obj) {
+// function saveToDataBase(obj) {
 
-}
+// }
 
 
 // EventListeners: 
@@ -294,12 +298,23 @@ postRenderDoms.saveButton.addEventListener('click', function() {
     // Assume we will never update quiz
     const obj = createObjectOfInputs();
     const dataBaseObj = createSerialObject(obj);
-    const myLocalStorage = new localStorage(dataBaseObj);
-    myLocalStorage.saveToLocalStorage();
+
+    // // local Storage saving methods: 
+    // const myLocalStorage = new localStorage(dataBaseObj);
+    // myLocalStorage.saveToLocalStorage();
 
     
-    // console.log("starting to save to database")
+    console.log("starting to save to database")
+    console.log("object: ", obj);
+    const mongoDbAtlas = new MongoDBAtlas(dataBaseObj);
+    let result = mongoDbAtlas.saveToDatabase();
 
+    console.log("Result: ", result);
+    if (result === 'success') {
+        console.log("Successfully saved to database!");
+    } else {
+        console.log("Error occured for saving to database")
+    }
 })
 
 // reset all the content of buttons.
