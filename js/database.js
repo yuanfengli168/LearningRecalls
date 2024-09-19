@@ -19,26 +19,6 @@ class MongoDBAtlas {
     // // Only write put method for now. 
     const obj = this.obj;
     console.log("object is: ", JSON.stringify(obj));
-    
-    // const responseStatus = await fetch('http://localhost:5001/api/data', {
-    //   method: 'PUT',
-    //   headers: {
-    //     'Content-Type': 'application/json'
-    //   },
-    //   body: this.transferObjToJSON(obj)
-    // })
-    // .then(response => response.json())
-    // .then(data => {
-    //   console.log("Updated:", data);
-    // })
-    // .catch(error => console.error('Error: ', error));
-
-    // console.log("Response: ", responseStatus);
-    // if (!responseStatus.ok) {
-    //   return "unsuccess";
-    // } else {
-    //   return "success";
-    // }
 
     try {
       // Fetch data from the API
