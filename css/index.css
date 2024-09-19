@@ -165,3 +165,18 @@ div .dailyQuizCreation .buttons {
     margin: 8px 0;
 
 }
+
+.data-container {
+    display: none;
+
+    &.successed {
+        display: inline;
+        background-color: green;
+    }
+
+    &.failed {
+        display: inline;
+        background-color: red;
+    }
+
+}

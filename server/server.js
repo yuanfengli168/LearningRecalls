@@ -46,53 +46,89 @@ app.get('/', (req, res) => {
 // api/data
 // saving new obj to database: 
 app.put('/api/data', async (req,res) => {
-    console.log("userID: ", req.body.userID);
+    let data = req.body;
+    let date = data.date;
+    let tag = data.tag;
 
-    // search if the database has this user!
+    // check if the database have this userID. 
+    let collection = getColInDB(COLLECTION_NAME, DB_NAME);
+    let userID = req.body.userID;
+    let document = await findUserIDInCol(userID, collection);
 
+    let mapOfDates = new Map(); // key: dates, value are map of tags in object format.
+    let mapOfTags = new Map();  // key: tags, value are object
+
+    // userID not exist.
+    if (document === null) {
+      mapOfDates = createMapOfDates(data);
+      await collection.insertOne({userID: userID, dates: transferMapToObject(mapOfDates)});
+    // userID exist:
+    } else {
+      objectOfDates = document.dates;
+      // TODO: if there is no .dates found what should you do?
+      mapOfDates = transferObjectToMap(objectOfDates);
+
+      // if date exist get mapOfTags. 
+      if (mapOfDates.get(date)) {
+        mapOfTags = transferObjectToMap(mapOfDates.get(date));
+      } 
+      // else would be an empty map.
+      mapOfTags = createMapOfTags(data, mapOfTags);
+      mapOfDates.set(date, transferMapToObject(mapOfTags));
+
+      await collection.updateOne({userID: userID}, {$set: {dates: transferMapToObject(mapOfDates)}});
+    }
+    
     return res.json('it worked!!');
 });
 
+function createMapOfTags(data, mapOfTags) {
+  mapOfTags.set(data.quizTags, data);
+  return mapOfTags;
+}
 
-// // Connect to MongoDB Atlas by mongoose worked.
-// mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-//   .then(() => 
-//     // connct to atlas
-//     console.log('Connected to MongoDB Atlas')
+function createMapOfDates(data) {
+  let map = new Map();
+  let mapOT = new Map();
+  mapOT = createMapOfTags(data, mapOT);
 
-//     // connect to the database and collection!
+  map.set(data.date, mapOT);
+  return map;
+}
 
-//   )
-//   .catch((err) => console.error('Error connecting to MongoDB:', err));
 
-// // connect to mongoDB by mongoClient worked.
-// async function main(){
-//     /**
-//      * Connection URI. Update <username>, <password>, and <your-cluster-url> to reflect your cluster.
-//      * See https://docs.mongodb.com/ecosystem/drivers/node/ for more details
-//      */
-//     const uri = "mongodb+srv://lyf992022:Mongodb05122024@cluster0.kzx6op0.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
- 
 
-//     const client = new MongoClient(uri);
- 
-//     try {
-//         // Connect to the MongoDB cluster
-//         await client.connect();
- 
-//         // Make the appropriate DB calls
-//         // await  listDatabases(client);
-//         console.log("Connected to MongoDB Atlas...");
- 
-//     } catch (e) {
-//         console.error(e);
-//     } finally {
+function transferMapToObject(map) {
+  return Object.fromEntries(map);
+}
 
-//         console.log("MongoDB connection disconnected and closed.")
-//         await client.close();
-//     }
-// }
-// main().catch(console.error);
+function transferObjectToMap(obj) {
+  return new Map(Object.entries(obj));
+}
+
+
+/**
+ * Return the collection object from mongoClient
+ * @param {string, string} collection, database
+ * @param {db.collection} database collection type
+ * @returns 
+ */
+function getColInDB(collection, database) {
+    let db = dbClient.db(database);
+    let dbCollection = db.collection(collection);
+
+    return dbCollection;
+}
+
+/**
+ * return true or false for the document
+ * @param {string} userID 
+ * @param {collection in mongoClient} collection 
+ */
+async function findUserIDInCol(userID, collection) {
+  const document = await collection.findOne({userID: userID});
+  return document;
+}
 
 
 // SERVER

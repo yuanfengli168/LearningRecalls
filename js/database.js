@@ -1,83 +1,3 @@
-
-
-// // Import MongoDB client
-// const { MongoClient } = require('mongodb');
-
-// // Connection URL (Replace with your MongoDB connection string)
-// const url = 'mongodb://localhost:27017';
-// const client = new MongoClient(url);
-
-// // Database and Collection name
-// const dbName = 'learningRecalls';
-// const collectionName = 'allData';
-
-
-// // Async function to connect and insert the object
-// async function saveObject(myObject) {
-//   try {
-//     // Connect to the MongoDB server
-//     await client.connect();
-//     console.log('Connected to MongoDB');
-
-//     // Select the database and collection
-//     const db = client.db(dbName);
-//     const collection = db.collection(collectionName);
-
-//     // Insert the object into the collection
-//     const result = await collection.insertOne(myObject);
-//     console.log(`Object inserted with _id: ${result.insertedId}`);
-//   } catch (error) {
-//     console.error('Error inserting object:', error);
-//   } finally {
-//     // Close the connection
-//     await client.close();
-//   }
-// }
-
-// // // Call the function to save the object
-// // saveObject();
-// export default saveObject;
-
-
-
-// const { MongoClient, ServerApiVersion } = require('mongodb');
-// const uri = "mongodb+srv://lyf992022:Mongodb05122024@cluster0.kzx6op0.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
-
-// // Create a MongoClient with a MongoClientOptions object to set the Stable API version
-// const client = new MongoClient(uri, {
-//   serverApi: {
-//     version: ServerApiVersion.v1,
-//     strict: true,
-//     deprecationErrors: true,
-//   }
-// });
-
-// const dbName = 'learningRecalls';
-// const collectionName = 'allData';
-
-// async function run() {
-//   try {
-//     // Connect the client to the server	(optional starting in v4.7)
-//     await client.connect();
-//     // Send a ping to confirm a successful connection
-//     await client.db("admin").command({ ping: 1 });
-//     console.log("Pinged your deployment. You successfully connected to MongoDB!");
-
-//     const db = client.db(dbName);
-//     const collection = db.collection(collectionName);
-
-//     // Insert the object into the collection
-//     const result = await collection.insertOne({a: "bbbb"});
-//     console.log(`Object inserted with _id: ${result.insertedId}`);
-
-
-//   } finally {
-//     // Ensures that the client will close when you finish/error
-//     await client.close();
-//   }
-// }
-// run().catch(console.dir);
-
 /**
  * an class that index.js can utilize
  */
@@ -94,28 +14,79 @@ class MongoDBAtlas {
    * @returns: str, "success"/"unsuccess";
    */
   async saveToDatabase() {
-    // communicate to backend. 
-    // making API calls. 
-    // Only write put method for now. 
+    // // communicate to backend. 
+    // // making API calls. 
+    // // Only write put method for now. 
     const obj = this.obj;
-    let isSuccess = false;
+    console.log("object is: ", JSON.stringify(obj));
     
-    fetch('http://localhost:5001/api/data', {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: this.transferObjToJSON(obj)
-    })
-    .then(response => response.json())
-    .then(data => {
-      console.log("Updated:", data);
-    })
-    .catch(error => console.error('Error: ', error));
+    // const responseStatus = await fetch('http://localhost:5001/api/data', {
+    //   method: 'PUT',
+    //   headers: {
+    //     'Content-Type': 'application/json'
+    //   },
+    //   body: this.transferObjToJSON(obj)
+    // })
+    // .then(response => response.json())
+    // .then(data => {
+    //   console.log("Updated:", data);
+    // })
+    // .catch(error => console.error('Error: ', error));
+
+    // console.log("Response: ", responseStatus);
+    // if (!responseStatus.ok) {
+    //   return "unsuccess";
+    // } else {
+    //   return "success";
+    // }
+
+    try {
+      // Fetch data from the API
+      // const response = await fetch('http://localhost:5001/api/data');
+      
+      const response = await fetch('http://localhost:5001/api/data', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: this.transferObjToJSON(obj)
+      })
+
+      // Check if the response is ok (status code 200-299)
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      // Parse the JSON data
+      const data = await response.json();
+
+      // Get the container element
+      const dataContainer = document.querySelector('.data-container');
+
+      // Update the content of the container with the fetched data
+      // This assumes `data` is a string or can be directly inserted
+
+      if (dataContainer) {
+        dataContainer.classList.add('successed');
+        dataContainer.textContent = "Saved Successed!"// Pretty-print JSON
+        setTimeout(() => dataContainer.classList.remove('successed'), 2000);
+      } else {
+        console.error("element not found");
+      }
+      
+
+    } catch (error) {
+      console.error('Error fetching data:', error);
+
+      // Update the container with an error message
+      const dataContainer = document.querySelector('.data-container');
+      dataContainer.classList.add('failed');
+      dataContainer.textContent = 'Failed to Save';
+      setTimeout(() => dataContainer.classList.remove('failed'), 2000);
+    }
   }
 
   transferObjToJSON(obj) {
     return JSON.stringify(obj);
   }
-
 }

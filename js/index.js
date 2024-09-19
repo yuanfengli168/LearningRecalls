@@ -1,7 +1,7 @@
 // // import saveObject from "./database";
 // import sessionStorage from "./session";
 
-const ROOT_USER_ID = '1001';
+const ROOT_USER_ID = 1001;
 
 const contentType = Object.freeze({
     todayTask: "Today Task",
@@ -87,6 +87,7 @@ function returnDailyQuizCreation() {
                 <div class="input">
                     <h4>Tags</h4>
                     <input></input>
+                    <div class="data-container"></div>
                 </div>
 
                 <div class="history">
@@ -280,11 +281,6 @@ function createSerialObject(obj) {
     return resultObj;
 }
 
-// function saveToDataBase(obj) {
-
-// }
-
-
 // EventListeners: 
 // banner buttons click
 initialDoms.bannersButtons.forEach(button => {
@@ -294,27 +290,12 @@ initialDoms.bannersButtons.forEach(button => {
 // saveButton and return values.
 postRenderDoms.saveButton.addEventListener('click', function() {
     // TODO: check if this quiz has been saved to database?
-
     // Assume we will never update quiz
     const obj = createObjectOfInputs();
     const dataBaseObj = createSerialObject(obj);
 
-    // // local Storage saving methods: 
-    // const myLocalStorage = new localStorage(dataBaseObj);
-    // myLocalStorage.saveToLocalStorage();
-
-    
-    console.log("starting to save to database")
-    console.log("object: ", obj);
     const mongoDbAtlas = new MongoDBAtlas(dataBaseObj);
-    let result = mongoDbAtlas.saveToDatabase();
-
-    console.log("Result: ", result);
-    if (result === 'success') {
-        console.log("Successfully saved to database!");
-    } else {
-        console.log("Error occured for saving to database")
-    }
+    mongoDbAtlas.saveToDatabase();
 })
 
 // reset all the content of buttons.
