@@ -43,6 +43,23 @@ app.get('/', (req, res) => {
   res.send('Hello from the Node.js backend!');
 });
 
+// get all Quiz
+app.get('/api/quizs', async (req, res) => {
+  // TODO: add userID as param
+  try {
+    const userID = 1001;
+
+    console.log("trying to find dates of ", userID);
+    let collection = getColInDB(COLLECTION_NAME, DB_NAME);
+    let document = await findUserIDInCol(userID, collection);
+    console.log("successed!")
+    res.json(document.dates);
+  }
+  catch (e) {
+    console.error(e);
+  }
+})
+
 // api/data
 // saving new obj to database: 
 app.put('/api/data', async (req,res) => {

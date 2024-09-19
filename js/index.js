@@ -2,6 +2,7 @@
 // import sessionStorage from "./session";
 
 const ROOT_USER_ID = 1001;
+var dataArray = [];
 
 const contentType = Object.freeze({
     todayTask: "Today Task",
@@ -12,6 +13,7 @@ const initialDoms = {
     banners: document.querySelector(".banners"),
     bannersButtons: document.querySelectorAll(".banners button"),
     contents: document.querySelector(".contents"),
+    quizButtons : null,
 }
 
 // UIs
@@ -47,15 +49,94 @@ function renderPage() {
     switch (contentType) {
         // case contentType.todayTask: 
         case "Today Task":
-            contentHTML = returnTodayTasks();
-            
+            initialDoms.contents.innerHTML = returnTodayTasks();
+            showPreviousQuizs();
             break;
         case "Daily Quiz Creation":
-            contentHTML = returnDailyQuizCreation();
+            initialDoms.contents.innerHTML = returnDailyQuizCreation();
+            addSaveButtonEventListener();
             break;
     }
+}
 
-    initialDoms.contents.innerHTML = contentHTML;
+// show all quizs under div.quiz
+async function showPreviousQuizs() {
+    try {
+        // get quizs as an array and including todays.
+        var previousQuizArray = await getPreviousQuizesFromDataBase() ?? [1, 2, 3];
+        if (previousQuizArray[0] !== 1) {
+            previousQuizArray.sort((a, b) => new Date(a.date) - new Date(b.date));
+            dataArray = previousQuizArray;
+        }
+
+        if (previousQuizArray && previousQuizArray.length > 0) {
+            for (let i = 0; i < previousQuizArray.length; i++) {
+                let quiz = previousQuizArray[i];
+
+                let date = quiz.date ?? "unfound";
+                let quizContent = quiz.content ?? "unfound";
+                // var answer = quiz.answer;
+
+                const newQuizTab = document.createElement('div');
+                newQuizTab.classList.add("quiz-item")
+                newQuizTab.innerHTML = 
+                    `<div class="quiz-cards ${i}">
+                            <div class="card-content">
+                                <h1>Date: ${date}</h1>
+                                <p>${quizContent}</p>
+                            </div>
+                            <button class="take">Take quiz</button>
+                            <button disabled class="logs">Logs V</button>
+                        </div>`
+
+                let parent = document.querySelector(".quiz");
+                parent.appendChild(newQuizTab);
+            }
+        }
+
+        let quizButton  = document.querySelectorAll('button.take');
+
+        quizButton.forEach((button, index) => {
+            let idx = index;
+            button.addEventListener('click', function() {
+                renderQuizOfIndex(idx);
+        })
+    })
+    } catch (e) {
+        console.error(e);
+    }
+
+    return;
+}
+
+// return an object 
+async function getPreviousQuizesFromDataBase() {
+    const mongoDbAtlas = new MongoDBAtlas();
+    const response = await mongoDbAtlas.getAllQuiz();
+    const datesObject = await response;
+    
+
+
+    // const datesObject = mongoDbAtlas.getAllQuiz();
+    const result = [];
+    for (const property in datesObject) {
+        const obj = {};
+        obj.date = property;
+
+        const tagObject = datesObject[property];
+        for (const tagProperty in tagObject) {
+            const tag = tagObject[tagProperty];
+            obj.tag = tag.quizTags;
+            obj.content = tag.quizContent;
+            obj.answer = tag.quizAnswerContent;
+            obj.hasFinished = tag.hasFinished;
+            obj.results = tag.results;
+            result.push(obj);
+        }
+        
+    }
+
+    return result.length === 0 ? null : result;
 }
 
 function returnDailyQuizCreation() {
@@ -128,34 +209,13 @@ function returnDailyQuizCreation() {
     `;
 }
 
-function returnTodayTasks() {
-    // TODO: build getPreviousQuiz();
-    var previousQuiz = getPreviousQuiz("2024-09-17"); //dateStr: 2024-09-17
-    var date = "";
-    var quizContent = "";
-    var answerContent = "";
-
-    if (previousQuiz) {
-        date = previousQuiz.date;
-        quizContent = previousQuiz.quizContent;
-        // TODO later
-        // answerContent = previousQuiz.answerContent;
-    }
-
+function returnTodayTasks() {    
     return `
         <div class="todayTaskContainer">
+            <p>Up to recent 3 day's Quiz</p>
             <div class="quiz">
-                <p>Up to recent 3 day's Quiz</p>
-                <div class="quiz-section">
-                    <div class="quiz-cards">
-                        <div class="card-content">
-                            <h1>Date: ${date}</h1>
-                            <p>${quizContent}</p>
-                        </div>
-                        <button class="take">Take quiz</button>
-                        <button disabled class="logs">Logs V</button>
-                    </div>
-                </div>
+                
+                
             </div>
             <div class="test">Last week's Test on Monday</div>
             <div class="Exam">Last Month's Exam on First Week's Monday</div>
@@ -163,20 +223,93 @@ function returnTodayTasks() {
     `;
 }
 
+function transferContentIntoLines(contentStr) {
+
+}
+
+function renderQuizOfIndex(index) {
+    console.log(dataArray);
+
+    let data = dataArray[index];
+    let date = data.date;
+    let tag = data.tag;
+    let quiz = data.content;
+    let answer = data.answer;
+
+    const parent = document.querySelector(".contents");
+    const newElementHTML = `
+        <div class="takeQuiz">
+            <p>${date}</p>
+            <p>Tag: ${tag}</p>
+            <div class="threeParts">
+                <div id="quiz_paragraph">
+                    <pre>${quiz}</pre>
+                </div>
+                
+                <div id="write_answer">
+                    <textarea placeholder="write your answer"></textarea>
+                </div>
+
+                <div>
+                    <p>what is your score?</p>
+                    <input type="text">
+                    <button class='showAnswer'>show answer</button>
+                    <button class='hideAnswer'>hide answer</button>
+                    <button class='return'>Return</button>
+                </div>
+                
+
+                <div id="answer_paragraph"></p>
+                    <pre>${answer}</pre>
+                </div>
+            </div>
+            
+            
+        </div>
+    `
+    parent.innerHTML = newElementHTML;
+
+    let showAnswerButton = document.querySelector('.showAnswer');
+    let hideAnswerButton = document.querySelector('.hideAnswer');
+    let returnButton = document.querySelector('.return');
+    let answerP = document.getElementById('answer_paragraph');
+    
+    showAnswerButton.addEventListener('click', 
+    function() {
+        answerP.classList.add("active");
+    })
+
+    hideAnswerButton.addEventListener('click', 
+    function() {
+        answerP.classList.remove("active");
+    })
+
+    returnButton.addEventListener('click', 
+    function() {
+        renderPage();
+    })
+}
+
 renderPage();
+
 
 // Data
 // return today's date in format: YYYY-MM-DD
-function getPreviousQuiz(dateStr) {
-    const resultObj = {};
-    resultObj.date = dateStr;
+function getPreviousQuizFromLocalStorage(dateStr) {
+    try {
+        const resultObj = {};
+        resultObj.date = dateStr;
+        
+        const localStorageObject = new localStorage();
+        var quiz = localStorageObject.getQuizByDate(dateStr);
+        resultObj.quizContent = quiz;
+
+
+        return resultObj;
+    } catch (e) {
+        console.error(e);
+    }
     
-    const localStorageObject = new localStorage();
-    var quiz = localStorageObject.getQuizByDate(dateStr);
-    resultObj.quizContent = quiz;
-
-
-    return resultObj;
 }
 
 const postRenderDoms = {
@@ -187,11 +320,13 @@ const postRenderDoms = {
     buttons: document.querySelectorAll(".contents .buttons"),
     saveButton: document.querySelector("button#save"),
     resetButton: document.querySelector("button#reset"),
+    takeQuizButtons: document.querySelectorAll('button.take')
 }
 
 // return what user has typed for quiz
 function getQuizCreaionContent() {
-    return postRenderDoms.textAreaOfQuiz.value;
+    console.log("quiz content", document.querySelector(".quizAndAnswer div.creation textArea").value);
+    return document.querySelector(".quizAndAnswer div.creation textArea")?.value ?? "";
 };
 
 function getTodayDate() {
@@ -208,17 +343,19 @@ function getTodayDate() {
 
 // return what user has typed for answer
 function getAnswerContent() {
-    return postRenderDoms.textAreaOfAnswer.value;
+    console.log("answer content", document.querySelector(".quizAndAnswer div.answer textArea")?.value)
+    return document.querySelector(".quizAndAnswer div.answer textArea")?.value ?? "";
 };
 
 // return what user has typed in tags
 function getTagInputs() {
-    return postRenderDoms.tagsInput.value;;
+    console.log("tag content", document.querySelector(".input input")?.value);
+    return document.querySelector(".input input")?.value ?? "";
 }
 
 // return what user has selected for the date
 function getSelectedDate() {
-    return postRenderDoms.date.value;
+    return document.querySelector(".date input")?.value;
 }
 
 // return an object including all the content user typed.
@@ -287,24 +424,30 @@ initialDoms.bannersButtons.forEach(button => {
     button.addEventListener('click', handleClick);
 })
 
-// saveButton and return values.
-postRenderDoms.saveButton.addEventListener('click', function() {
-    // TODO: check if this quiz has been saved to database?
-    // Assume we will never update quiz
-    const obj = createObjectOfInputs();
-    const dataBaseObj = createSerialObject(obj);
 
-    const mongoDbAtlas = new MongoDBAtlas(dataBaseObj);
-    mongoDbAtlas.saveToDatabase();
-})
+function addSaveButtonEventListener() {
+    let button = document.querySelector("button#save");
+    console.log(button);
+
+    button.addEventListener('click', function() {
+        console.log("saving the contnet to database!")
+        // TODO: check if this quiz has been saved to database?
+        // Assume we will never update quiz
+        const obj = createObjectOfInputs();
+        const dataBaseObj = createSerialObject(obj);
+
+        const mongoDbAtlas = new MongoDBAtlas(dataBaseObj);
+        mongoDbAtlas.saveToDatabase();
+    })
+}
+
 
 // reset all the content of buttons.
-postRenderDoms.resetButton.addEventListener('click', function() {
+if (postRenderDoms.resetButton) {
+    postRenderDoms.resetButton.addEventListener('click', function() {
     resetInputs();
 })
-
-
-
+}
 
 
 

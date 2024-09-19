@@ -7,6 +7,29 @@ class MongoDBAtlas {
   }
 
   /**
+   * return all quiz saved in allData collection
+   */
+  async getAllQuiz() {
+    try {
+      const response = await fetch('http://localhost:5001/api/quizs', {
+                          method: 'GET',
+                       })
+      if (!response.ok) {
+        throw new Error('Network response was not ok ' + response.statusText);
+      }
+
+      const data = await response.json(); // data is in object format.
+      // console.log("data", data);
+      // return data;
+      return data;
+    } 
+    catch (e) {
+      console.error(e);
+    }
+  }
+
+
+  /**
    * Using put method, because the userID is always the same 1001
    * for now. 
    * 
@@ -18,7 +41,6 @@ class MongoDBAtlas {
     // // making API calls. 
     // // Only write put method for now. 
     const obj = this.obj;
-    console.log("object is: ", JSON.stringify(obj));
 
     try {
       // Fetch data from the API
