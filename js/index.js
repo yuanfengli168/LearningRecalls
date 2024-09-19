@@ -1,6 +1,3 @@
-// // import saveObject from "./database";
-// import sessionStorage from "./session";
-
 const ROOT_USER_ID = 1001;
 var dataArray = [];
 
@@ -312,6 +309,8 @@ function getPreviousQuizFromLocalStorage(dateStr) {
     
 }
 
+// not usable 
+// TODO: find out reason why!
 const postRenderDoms = {
     textAreaOfQuiz : document.querySelector(".quizAndAnswer div.creation textArea"),
     textAreaOfAnswer: document.querySelector(".quizAndAnswer div.answer textArea"),

@@ -13,3 +13,7 @@ Excalidraw Design doc: https://excalidraw.com/#json=a5yZjqekdjg57tjaXhJsr,l0l89l
 db.allData.insertOne({userID: 1004, dates: {'2024-09-19': {'1': {userID: 1004, date: '11111111', quizTags:'1', quizContent:'1111', quizAnswerContent: '2222', hasFinished: false, results:[]}}}})
 
 ```
+
+## how to run this app: 
+- frontend: open in vscode and go to index.html right click on it and select 'Open with Live Server' (need to install this oplugin: Live Server Ritwick Dey)
+- backend: cd server/ `node server.js`
