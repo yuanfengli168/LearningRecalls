@@ -117,6 +117,7 @@ div .tags {
 
     .input {
         width: 16vw;
+        margin: 0;
     }    
 
     .history .tabs {
@@ -215,6 +216,11 @@ div .dailyQuizCreation .buttons {
 
 }
 
+/* Tags on Daily Creation */
+.history {
+    display: none;
+}
+
 
 /* Quiz Tabs */
 .contents {
@@ -294,10 +300,30 @@ div .quiz-item {
 
 .takeQuiz input {
     display: block;
-    /* margin: 1rem 0 0 0; */
 }
 
 .takeQuiz button {
     display: block;
     margin: 1rem 0;
 }
+
+span.successed {
+    display: none;
+
+    &.active {
+        display: inline;
+        background-color: green;
+    }
+}
+
+
+span.failed {
+    display: none;
+
+    &.active {
+        display: inline;
+        background-color: red;
+    }
+}
+
+

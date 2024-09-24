@@ -224,9 +224,29 @@ function transferContentIntoLines(contentStr) {
 
 }
 
-function renderQuizOfIndex(index) {
-    console.log(dataArray);
+function getCurrentTime() {
+    const now = new Date();
 
+    // Get the current time
+    let hours = now.getHours();
+    let minutes = now.getMinutes();
+    let seconds = now.getSeconds();
+
+    hours = hours.toString().padStart(2, "0");
+    minutes = minutes.toString().padStart(2, "0");
+    seconds = seconds.toString().padStart(2, "0");
+
+    return `${hours}:${minutes}:${seconds}`;
+}
+
+function getCurrentDateAndTime() {
+    let date = getTodayDate();
+    let time = getCurrentTime();
+
+    return date + " " + time;
+}
+
+function renderQuizOfIndex(index) {
     let data = dataArray[index];
     let date = data.date;
     let tag = data.tag;
@@ -249,10 +269,14 @@ function renderQuizOfIndex(index) {
 
                 <div>
                     <p>what is your score?</p>
-                    <input type="text">
+                    <input type="text" class='scoreInput'>
+                    <button class='saveScore'>Save Score</button>
                     <button class='showAnswer'>show answer</button>
                     <button class='hideAnswer'>hide answer</button>
                     <button class='return'>Return</button>
+
+                    <span class='successed'>Saved Successed!</span>
+                    <span class='failed'>Failed to Save</span>
                 </div>
                 
 
@@ -266,10 +290,45 @@ function renderQuizOfIndex(index) {
     `
     parent.innerHTML = newElementHTML;
 
+    let saveButton = document.querySelector('.saveScore');
     let showAnswerButton = document.querySelector('.showAnswer');
     let hideAnswerButton = document.querySelector('.hideAnswer');
     let returnButton = document.querySelector('.return');
     let answerP = document.getElementById('answer_paragraph');
+    
+
+    saveButton.addEventListener('click', function() {
+        let type = 'quiz';
+        let finishedDateTime = getCurrentDateAndTime();
+
+        let score = document.querySelector('.scoreInput').value;
+        
+        if (!score) {
+            window.alert("Please enter a number as score!");
+            return;
+        }
+
+        const mongoDbAtlas = new MongoDBAtlas();
+        const result = mongoDbAtlas.postScore(date, type, finishedDateTime, score, ROOT_USER_ID, tag);
+        result.then(res => {
+            if (res === true) {
+                let span = document.querySelector('span.successed');
+                span.classList.add('active');
+
+                setTimeout(() => {
+                    span.classList.remove('active');
+                }, 2000);
+            } else {
+                let span = document.querySelector('span.failed');
+                span.classList.add('active');
+
+                setTimeout(() => {
+                    span.classList.remove('active');
+                }, 2000);
+            }
+        })
+        
+    })
     
     showAnswerButton.addEventListener('click', 
     function() {
@@ -324,7 +383,6 @@ const postRenderDoms = {
 
 // return what user has typed for quiz
 function getQuizCreaionContent() {
-    console.log("quiz content", document.querySelector(".quizAndAnswer div.creation textArea").value);
     return document.querySelector(".quizAndAnswer div.creation textArea")?.value ?? "";
 };
 
@@ -342,13 +400,11 @@ function getTodayDate() {
 
 // return what user has typed for answer
 function getAnswerContent() {
-    console.log("answer content", document.querySelector(".quizAndAnswer div.answer textArea")?.value)
     return document.querySelector(".quizAndAnswer div.answer textArea")?.value ?? "";
 };
 
 // return what user has typed in tags
 function getTagInputs() {
-    console.log("tag content", document.querySelector(".input input")?.value);
     return document.querySelector(".input input")?.value ?? "";
 }
 
@@ -426,10 +482,8 @@ initialDoms.bannersButtons.forEach(button => {
 
 function addSaveButtonEventListener() {
     let button = document.querySelector("button#save");
-    console.log(button);
 
     button.addEventListener('click', function() {
-        console.log("saving the contnet to database!")
         // TODO: check if this quiz has been saved to database?
         // Assume we will never update quiz
         const obj = createObjectOfInputs();

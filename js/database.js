@@ -19,8 +19,7 @@ class MongoDBAtlas {
       }
 
       const data = await response.json(); // data is in object format.
-      // console.log("data", data);
-      // return data;
+
       return data;
     } 
     catch (e) {
@@ -85,6 +84,44 @@ class MongoDBAtlas {
       dataContainer.classList.add('failed');
       dataContainer.textContent = 'Failed to Save';
       setTimeout(() => dataContainer.classList.remove('failed'), 2000);
+    }
+  }
+
+  /**
+   * 
+   * @param {String} date 
+   * @param {String} type 
+   * @param {String} finishedDateTime
+   * @param {Number} score 
+   */
+  async postScore(date, type, finishedDateTime, score, userID, tag) {
+    const obj = {
+          userID: userID,
+          tag: tag,
+          date: date,
+          finishedDateTime: finishedDateTime,
+          score: score
+    };
+
+    try {
+      const response = await fetch('http://localhost:5001/api/scores', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: this.transferObjToJSON(obj)
+      });
+
+      if (!response.ok) {
+        return false;
+      }
+      else {
+        return true;
+      }
+    } 
+    catch (e) {
+      console.error(e);
+      return false;
     }
   }
 

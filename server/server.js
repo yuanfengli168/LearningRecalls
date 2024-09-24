@@ -99,6 +99,56 @@ app.put('/api/data', async (req,res) => {
     return res.json('it worked!!');
 });
 
+app.post('/api/scores', async (req, res) => {
+  try {
+    // get date, type, finishedDateTime, and score
+    let data = req.body;
+    let userID = data.userID;
+    let tag = data.tag;
+    let date = data.date;
+    // for now we only got Quiz type, we need 
+    // test, and exam in future. TODO.
+    // let type = data.type;
+    let finishedDateTime = data.finishedDateTime;
+    let score = data.score;
+
+    // find the key of results
+    // TODO: combine all this into one private member of the class or this file
+    const collection = getColInDB(COLLECTION_NAME, DB_NAME);
+    const document = await findUserIDInCol(userID, collection);
+    const mapOfDates = transferObjectToMap(document.dates);
+
+    const mapOfTags = transferObjectToMap(mapOfDates.get(date));
+    const results = transferObjectToMap(mapOfTags.get(tag)).get("results");
+
+    const obj = {
+      finishedDateTime: finishedDateTime,
+      score: score,
+    }
+    results.push(obj);
+    
+    // set in database.
+    const filter = {userID: userID};
+    let keys = "dates." + date + "." + tag + ".results";
+    // the following won't work, as well as str.concat();
+    // const keys = `dates.${date}.${tag}.results`;
+
+    // the backtiks, and concat won't work for keys
+    // only the computed property names works.
+    // use [] as computed property names.
+    const update = {
+      // $set: {"dates.2024-09-20.html.results" : results} // this works though
+      $set: { [keys] : results}
+    };
+    await collection.updateOne(filter, update);
+
+    return res.json();
+  } 
+  catch (e) {
+    console.error(e);
+  }
+});
+
 function createMapOfTags(data, mapOfTags) {
   mapOfTags.set(data.quizTags, data);
   return mapOfTags;
@@ -112,7 +162,6 @@ function createMapOfDates(data) {
   map.set(data.date, mapOT);
   return map;
 }
-
 
 
 function transferMapToObject(map) {
