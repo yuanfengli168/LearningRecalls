@@ -17,3 +17,8 @@ db.allData.insertOne({userID: 1004, dates: {'2024-09-19': {'1': {userID: 1004, d
 ## how to run this app: 
 - frontend: open in vscode and go to index.html right click on it and select 'Open with Live Server' (need to install this oplugin: Live Server Ritwick Dey)
 - backend: cd server/ `node server.js`
+
+## MVP1.0 finished 
+- started on 09/13/2024 ~ 09/25/2024
+- there are some bugs not fixed, see TODOs pictures.
+- the test and exam fitures are abandoned.
