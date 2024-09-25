@@ -125,6 +125,40 @@ class MongoDBAtlas {
     }
   }
 
+
+  async getAllTags(userID, date) {
+    try{
+      let response;
+
+      if (!date) {
+        date = "none"
+        response = await fetch(`http://localhost:5001/api/all-tags?userID=${userID}`, {
+          method: "GET",  
+          headers: {
+            'Content-Type': 'application/json'
+          },
+        });
+      } 
+      else {
+        response = await fetch(`http://localhost:5001/api/today-tags?userID=${userID}&date=${date}`, {
+          method: "GET",  
+          headers: {
+            'Content-Type': 'application/json'
+          },
+        });
+      }
+
+      if (!response.ok) {
+        throw new Error("all-tags api erros occured");
+      }
+      const data = await response.json();
+      return data; // arrayOfTags
+    }
+    catch (e) {
+      console.error(e);
+    }
+  }
+
   transferObjToJSON(obj) {
     return JSON.stringify(obj);
   }

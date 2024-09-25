@@ -32,7 +32,7 @@ function findContent() {
         case "dailyQuizCreation":
             resultContentType = contentType.dailyQuizCreation;
             break;
-        case "quizHistory": 
+        case "quizHistory":
             resultContentType = contentType.quizHistory;
             break;
     }
@@ -55,15 +55,53 @@ function renderPage() {
             break;
         case "Daily Quiz Creation":
             initialDoms.contents.innerHTML = returnDailyQuizCreation();
+            renderAllTags();
+            renderTodayTags();
             addSaveButtonEventListener();
+            addTagsEventListern();
             break;
-        case "Quiz History": 
+        case "Quiz History":
             initialDoms.contents.innerHTML = returnQuizHistory();
             showPreviousQuizs(true);
             break;
     }
 }
 
+async function renderAllTags() {
+    // get the data from backend
+    const mongoDbAtlas = new MongoDBAtlas();
+    const tags = await mongoDbAtlas.getAllTags(ROOT_USER_ID);
+
+    let parent = document.querySelector(".allTags");
+    let span = '';
+    if (tags.length <= 0) {
+        span = '<i>No Tags found</i>';
+    } else {
+        for (let tag of tags) {
+            span += `<p>${tag}</p>`
+        }
+    }
+    parent.innerHTML = span;
+}
+
+async function renderTodayTags() {
+    // get the data from backend
+    const mongoDbAtlas = new MongoDBAtlas();
+    let date = getSelectedDate();
+
+    const tags = await mongoDbAtlas.getAllTags(ROOT_USER_ID, date);
+
+    let parent = document.querySelector(".todayTags");
+    let span = '';
+    if (tags.length <= 0) {
+        span = '<i>No Tags found</i>';
+    } else {
+        for (let tag of tags) {
+            span += `<p>${tag}</p>`
+        }
+    }
+    parent.innerHTML = span;
+}
 
 function returnQuizHistory() {
     return `
@@ -91,7 +129,7 @@ async function showPreviousQuizs(showAll) {
         if (!showAll) {
             previousQuizArray = previousQuizArray.filter(quiz => quiz.results.length === 0);
         }
-        
+
 
         if (previousQuizArray && previousQuizArray.length > 0) {
             for (let i = 0; i < previousQuizArray.length; i++) {
@@ -101,11 +139,11 @@ async function showPreviousQuizs(showAll) {
                 let tag = quiz.tag;
 
                 let numbers1Match = quizContent === "unfound" ? 0 : quizContent.match(/\d+\./g);
-                
+
                 let numbers1 = numbers1Match === 0 || numbers1Match === null ? 0 : numbers1Match.length;
                 let numbers2 = quizContent === "unfound" ? 0 : quizContent.trim().split("\n").length;
                 let numbers = Math.min(numbers1, numbers2);
-                
+
 
                 const newQuizTab = document.createElement('div');
                 newQuizTab.classList.add("quiz-item")
@@ -126,7 +164,7 @@ async function showPreviousQuizs(showAll) {
 
                 let parent = document.querySelector(".quiz");
                 parent.appendChild(newQuizTab);
-             
+
             }
         }
 
@@ -141,7 +179,7 @@ async function showPreviousQuizs(showAll) {
         let quizLogs = document.querySelectorAll('button.logs');
         quizLogs.forEach((button, index) => {
             let idx = index;
-            button.addEventListener('click', function() {
+            button.addEventListener('click', function () {
                 renderLogsOfIndex(idx, previousQuizArray, false);
                 button.textContent = `Hide Logs`;
                 button.classList.add("hide");
@@ -159,12 +197,12 @@ async function showPreviousQuizs(showAll) {
 function renderLogsOfIndex(idx, previousQuizArray, isHidden) {
     // get results
     let quiz = previousQuizArray[idx];
-    var element = `<h4>Logs:</h4>`; 
-    
-    
+    var element = `<h4>Logs:</h4>`;
+
+
     if (isHidden) {
         element = ``;
-    } 
+    }
     else {
         if (quiz.results.length > 0) {
             // only get most recent 5 times score! for logs!
@@ -188,11 +226,11 @@ function renderLogsOfIndex(idx, previousQuizArray, isHidden) {
     // the hide is not good for now.
     // you have to click button twice.
     let hideLogs = document.querySelectorAll('.hide');
-        hideLogs.forEach((button) => {
-            // let idx = index;
-            button.addEventListener('click', function() {
-                // button.classList.remove("hide");
-                renderPage();
+    hideLogs.forEach((button) => {
+        // let idx = index;
+        button.addEventListener('click', function () {
+            // button.classList.remove("hide");
+            renderPage();
         })
     })
 }
@@ -280,27 +318,13 @@ function returnDailyQuizCreation() {
 
                 <div class="history">
                     <p><b>Used Tags</b></p>
-                    <div class="tabs">
-                        <p>HTML+CSS</p> 
-                        <p>HTML+CSS</p> 
-                        <p>HTML+CSS</p>
-                        <p>HTML+CSS</p> 
-                        <p>HTML+CSS</p> 
-                        <p>HTML+CSS</p>
-                        <p>HTML+CSS</p> 
-                        <p>HTML+CSS</p> 
-                        <p>HTML+CSS</p>
-                        <p>HTML+CSS</p> 
-                        <p>HTML+CSS</p> 
-                        <p>HTML+CSS</p>
-                        <p>HTML+CSS</p> 
-                        <p>HTML+CSS</p> 
-                        <p>HTML+CSS</p>
+                    <div class="allTags tabs">
+                        
                     </div>
                     <hr>
-                    <p><b>Today Tags</b></p>
-                    <div class="tabs">
-                    <p>HTML+CSS</p>
+                    <p><b>Selected Date Tags</b></p>
+                    <div class="todayTags tabs">
+                        
                     </div>
                 </div>
             </div>
@@ -612,7 +636,14 @@ if (postRenderDoms.resetButton) {
     })
 }
 
-
+function addTagsEventListern() {
+    if (document.querySelector('.date input')) {
+        document.querySelector('.date input').addEventListener('change', function () {
+            renderAllTags();
+            renderTodayTags();
+        })
+    }
+}
 
 
 

@@ -121,10 +121,8 @@ div .tags {
     }    
 
     .history .tabs {
-        /* width: 70%; */
-
         width: 65vw;
-        /* width: 30rem; */
+
         padding: 0;
         margin: 0;
         font-size: 14px;
@@ -138,7 +136,8 @@ div .tags {
             margin-right: 8px;
             border: 1px solid;
             border-radius: 5px;
-            padding: 1px;
+            padding: 4px;
+            background-color: rgb(217, 217, 217);
         }
         
     }
@@ -152,7 +151,8 @@ div .tags {
     }
 
     .history {
-        /* flex-grow: 1; */
+        display: block;
+        height: 125px;
 
         hr {
             width: 70%;
@@ -216,11 +216,6 @@ div .dailyQuizCreation .buttons {
         background-color: red;
     }
 
-}
-
-/* Tags on Daily Creation */
-.history {
-    display: none;
 }
 
 
