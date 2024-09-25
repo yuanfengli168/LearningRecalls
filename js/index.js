@@ -4,13 +4,14 @@ var dataArray = [];
 const contentType = Object.freeze({
     todayTask: "Today Task",
     dailyQuizCreation: "Daily Quiz Creation",
+    quizHistory: "Quiz History",
 })
 
 const initialDoms = {
     banners: document.querySelector(".banners"),
     bannersButtons: document.querySelectorAll(".banners button"),
     contents: document.querySelector(".contents"),
-    quizButtons : null,
+    quizButtons: null,
 }
 
 // UIs
@@ -23,16 +24,19 @@ function findContent() {
     var activeButton = initialDoms.banners.querySelector(".active") ?? null;
     var resultContentType = null;
     var activeButtonClass = activeButton.classList[0];
-    
+
     switch (activeButtonClass) {
-        case "todayTasks": 
+        case "todayTasks":
             resultContentType = contentType.todayTask;
             break;
         case "dailyQuizCreation":
             resultContentType = contentType.dailyQuizCreation;
             break;
+        case "quizHistory":
+            resultContentType = contentType.quizHistory;
+            break;
     }
- 
+
     // default we are on Daily Quiz Creation.
     resultContentType = resultContentType === null ? contentType.todayTask : resultContentType;
     return resultContentType;
@@ -51,13 +55,68 @@ function renderPage() {
             break;
         case "Daily Quiz Creation":
             initialDoms.contents.innerHTML = returnDailyQuizCreation();
+            renderAllTags();
+            renderTodayTags();
             addSaveButtonEventListener();
+            addTagsEventListern();
+            break;
+        case "Quiz History":
+            initialDoms.contents.innerHTML = returnQuizHistory();
+            showPreviousQuizs(true);
             break;
     }
 }
 
+async function renderAllTags() {
+    // get the data from backend
+    const mongoDbAtlas = new MongoDBAtlas();
+    const tags = await mongoDbAtlas.getAllTags(ROOT_USER_ID);
+
+    let parent = document.querySelector(".allTags");
+    let span = '';
+    if (tags.length <= 0) {
+        span = '<i>No Tags found</i>';
+    } else {
+        for (let tag of tags) {
+            span += `<p>${tag}</p>`
+        }
+    }
+    parent.innerHTML = span;
+}
+
+async function renderTodayTags() {
+    // get the data from backend
+    const mongoDbAtlas = new MongoDBAtlas();
+    let date = getSelectedDate();
+
+    const tags = await mongoDbAtlas.getAllTags(ROOT_USER_ID, date);
+
+    let parent = document.querySelector(".todayTags");
+    let span = '';
+    if (tags.length <= 0) {
+        span = '<i>No Tags found</i>';
+    } else {
+        for (let tag of tags) {
+            span += `<p>${tag}</p>`
+        }
+    }
+    parent.innerHTML = span;
+}
+
+function returnQuizHistory() {
+    return `
+        <div class="QuizHistoryContainer">
+            <p>All Past Quizs</p>
+            <div class="quiz">
+                
+                
+            </div>
+        </div>
+    `;
+}
+
 // show all quizs under div.quiz
-async function showPreviousQuizs() {
+async function showPreviousQuizs(showAll) {
     try {
         // get quizs as an array and including todays.
         var previousQuizArray = await getPreviousQuizesFromDataBase() ?? [1, 2, 3];
@@ -66,39 +125,68 @@ async function showPreviousQuizs() {
             dataArray = previousQuizArray;
         }
 
+        // get all quiz that has not been finished.
+        if (!showAll) {
+            previousQuizArray = previousQuizArray.filter(quiz => quiz.results.length === 0);
+        }
+
+
         if (previousQuizArray && previousQuizArray.length > 0) {
             for (let i = 0; i < previousQuizArray.length; i++) {
                 let quiz = previousQuizArray[i];
-
                 let date = quiz.date ?? "unfound";
                 let quizContent = quiz.content ?? "unfound";
-                // var answer = quiz.answer;
+                let tag = quiz.tag;
+
+                let numbers1Match = quizContent === "unfound" ? 0 : quizContent.match(/\d+\./g);
+
+                let numbers1 = numbers1Match === 0 || numbers1Match === null ? 0 : numbers1Match.length;
+                let numbers2 = quizContent === "unfound" ? 0 : quizContent.trim().split("\n").length;
+                let numbers = Math.min(numbers1, numbers2);
+
 
                 const newQuizTab = document.createElement('div');
                 newQuizTab.classList.add("quiz-item")
-                newQuizTab.innerHTML = 
+                newQuizTab.innerHTML =
                     `<div class="quiz-cards ${i}">
                             <div class="card-content">
-                                <h1>Date: ${date}</h1>
+                                <h3>Date: ${date}, Tag: ${tag}, Numbers: ${numbers}</h3>
                                 <p>${quizContent}</p>
                             </div>
-                            <button class="take">Take quiz</button>
-                            <button disabled class="logs">Logs V</button>
-                        </div>`
+                                <button class="take">Take quiz</button>
+                                <button class="logs">Logs v</button>
+                            </div>
+                    </div>
+                    <div class="card-logs-${i}">
+
+                    </div>
+                    `
 
                 let parent = document.querySelector(".quiz");
                 parent.appendChild(newQuizTab);
+
             }
         }
 
-        let quizButton  = document.querySelectorAll('button.take');
-
+        let quizButton = document.querySelectorAll('button.take');
         quizButton.forEach((button, index) => {
             let idx = index;
-            button.addEventListener('click', function() {
-                renderQuizOfIndex(idx);
+            button.addEventListener('click', function () {
+                renderQuizOfIndex(idx, previousQuizArray);
+            })
         })
-    })
+
+        let quizLogs = document.querySelectorAll('button.logs');
+        quizLogs.forEach((button, index) => {
+            let idx = index;
+            button.addEventListener('click', function () {
+                renderLogsOfIndex(idx, previousQuizArray, false);
+                button.textContent = `Hide Logs`;
+                button.classList.add("hide");
+            })
+        })
+
+
     } catch (e) {
         console.error(e);
     }
@@ -106,31 +194,91 @@ async function showPreviousQuizs() {
     return;
 }
 
+function renderLogsOfIndex(idx, previousQuizArray, isHidden) {
+    // get results
+    let quiz = previousQuizArray[idx];
+    var element = `<h4>Logs:</h4>`;
+
+
+    if (isHidden) {
+        element = ``;
+    }
+    else {
+        if (quiz.results.length > 0) {
+            // only get most recent 5 times score! for logs!
+            for (const res of quiz.results.slice(-5)) {
+                const finishedDateAndTime = res.finishedDateTime;
+                const score = res.score;
+
+                element += `
+                    <p>Finished Date: ${finishedDateAndTime}, Score: ${score}.</p>
+                `
+            }
+        } else {
+            element = `<p>There is no logs available yet, please take the quiz!!!`;
+        }
+    }
+    let parent = document.querySelector(`.card-logs-${idx}`);
+    parent.innerHTML = element;
+
+
+    // TODO: 
+    // the hide is not good for now.
+    // you have to click button twice.
+    let hideLogs = document.querySelectorAll('.hide');
+    hideLogs.forEach((button) => {
+        // let idx = index;
+        button.addEventListener('click', function () {
+            // button.classList.remove("hide");
+            renderPage();
+        })
+    })
+}
+
 // return an object 
 async function getPreviousQuizesFromDataBase() {
     const mongoDbAtlas = new MongoDBAtlas();
     const response = await mongoDbAtlas.getAllQuiz();
     const datesObject = await response;
-    
+
 
 
     // const datesObject = mongoDbAtlas.getAllQuiz();
     const result = [];
-    for (const property in datesObject) {
-        const obj = {};
-        obj.date = property;
+    // this was ok, but was not the best practices.
+    // for (const property in datesObject) {
+    //     const obj = {};
+    //     obj.date = property;
+    //     console.log("date: ", property);
 
+    //     const tagObject = datesObject[property];
+    //     for (const tagProperty in tagObject) {
+    //         const tag = tagObject[tagProperty];
+    //         obj.tag = tag.quizTags;
+    //         obj.content = tag.quizContent;
+    //         obj.answer = tag.quizAnswerContent;
+    //         obj.hasFinished = tag.hasFinished;
+    //         obj.results = tag.results;
+
+    //         console.log("obj: ", obj);
+    //         result.push({...obj}); // !!! one of the bug
+    //     }
+    // }
+
+    for (const property in datesObject) {
         const tagObject = datesObject[property];
         for (const tagProperty in tagObject) {
+            const obj = {};
+            obj.date = property;
             const tag = tagObject[tagProperty];
             obj.tag = tag.quizTags;
             obj.content = tag.quizContent;
             obj.answer = tag.quizAnswerContent;
             obj.hasFinished = tag.hasFinished;
             obj.results = tag.results;
+
             result.push(obj);
         }
-        
     }
 
     return result.length === 0 ? null : result;
@@ -170,27 +318,13 @@ function returnDailyQuizCreation() {
 
                 <div class="history">
                     <p><b>Used Tags</b></p>
-                    <div class="tabs">
-                        <p>HTML+CSS</p> 
-                        <p>HTML+CSS</p> 
-                        <p>HTML+CSS</p>
-                        <p>HTML+CSS</p> 
-                        <p>HTML+CSS</p> 
-                        <p>HTML+CSS</p>
-                        <p>HTML+CSS</p> 
-                        <p>HTML+CSS</p> 
-                        <p>HTML+CSS</p>
-                        <p>HTML+CSS</p> 
-                        <p>HTML+CSS</p> 
-                        <p>HTML+CSS</p>
-                        <p>HTML+CSS</p> 
-                        <p>HTML+CSS</p> 
-                        <p>HTML+CSS</p>
+                    <div class="allTags tabs">
+                        
                     </div>
                     <hr>
-                    <p><b>Today Tags</b></p>
-                    <div class="tabs">
-                    <p>HTML+CSS</p>
+                    <p><b>Selected Date Tags</b></p>
+                    <div class="todayTags tabs">
+                        
                     </div>
                 </div>
             </div>
@@ -206,7 +340,7 @@ function returnDailyQuizCreation() {
     `;
 }
 
-function returnTodayTasks() {    
+function returnTodayTasks() {
     return `
         <div class="todayTaskContainer">
             <p>Up to recent 3 day's Quiz</p>
@@ -224,10 +358,30 @@ function transferContentIntoLines(contentStr) {
 
 }
 
-function renderQuizOfIndex(index) {
-    console.log(dataArray);
+function getCurrentTime() {
+    const now = new Date();
 
-    let data = dataArray[index];
+    // Get the current time
+    let hours = now.getHours();
+    let minutes = now.getMinutes();
+    let seconds = now.getSeconds();
+
+    hours = hours.toString().padStart(2, "0");
+    minutes = minutes.toString().padStart(2, "0");
+    seconds = seconds.toString().padStart(2, "0");
+
+    return `${hours}:${minutes}:${seconds}`;
+}
+
+function getCurrentDateAndTime() {
+    let date = getTodayDate();
+    let time = getCurrentTime();
+
+    return date + " " + time;
+}
+
+function renderQuizOfIndex(index, previousQuizArray) {
+    let data = previousQuizArray[index];
     let date = data.date;
     let tag = data.tag;
     let quiz = data.content;
@@ -249,10 +403,14 @@ function renderQuizOfIndex(index) {
 
                 <div>
                     <p>what is your score?</p>
-                    <input type="text">
+                    <input type="text" class='scoreInput'>
+                    <button class='saveScore'>Save Score</button>
                     <button class='showAnswer'>show answer</button>
                     <button class='hideAnswer'>hide answer</button>
                     <button class='return'>Return</button>
+
+                    <span class='successed'>Saved Successed!</span>
+                    <span class='failed'>Failed to Save</span>
                 </div>
                 
 
@@ -266,25 +424,60 @@ function renderQuizOfIndex(index) {
     `
     parent.innerHTML = newElementHTML;
 
+    let saveButton = document.querySelector('.saveScore');
     let showAnswerButton = document.querySelector('.showAnswer');
     let hideAnswerButton = document.querySelector('.hideAnswer');
     let returnButton = document.querySelector('.return');
     let answerP = document.getElementById('answer_paragraph');
-    
-    showAnswerButton.addEventListener('click', 
-    function() {
-        answerP.classList.add("active");
+
+
+    saveButton.addEventListener('click', function () {
+        let type = 'quiz';
+        let finishedDateTime = getCurrentDateAndTime();
+
+        let score = document.querySelector('.scoreInput').value;
+
+        if (!score) {
+            window.alert("Please enter a number as score!");
+            return;
+        }
+
+        const mongoDbAtlas = new MongoDBAtlas();
+        const result = mongoDbAtlas.postScore(date, type, finishedDateTime, score, ROOT_USER_ID, tag);
+        result.then(res => {
+            if (res === true) {
+                let span = document.querySelector('span.successed');
+                span.classList.add('active');
+
+                setTimeout(() => {
+                    span.classList.remove('active');
+                }, 2000);
+            } else {
+                let span = document.querySelector('span.failed');
+                span.classList.add('active');
+
+                setTimeout(() => {
+                    span.classList.remove('active');
+                }, 2000);
+            }
+        })
+
     })
 
-    hideAnswerButton.addEventListener('click', 
-    function() {
-        answerP.classList.remove("active");
-    })
+    showAnswerButton.addEventListener('click',
+        function () {
+            answerP.classList.add("active");
+        })
 
-    returnButton.addEventListener('click', 
-    function() {
-        renderPage();
-    })
+    hideAnswerButton.addEventListener('click',
+        function () {
+            answerP.classList.remove("active");
+        })
+
+    returnButton.addEventListener('click',
+        function () {
+            renderPage();
+        })
 }
 
 renderPage();
@@ -296,7 +489,7 @@ function getPreviousQuizFromLocalStorage(dateStr) {
     try {
         const resultObj = {};
         resultObj.date = dateStr;
-        
+
         const localStorageObject = new localStorage();
         var quiz = localStorageObject.getQuizByDate(dateStr);
         resultObj.quizContent = quiz;
@@ -306,13 +499,13 @@ function getPreviousQuizFromLocalStorage(dateStr) {
     } catch (e) {
         console.error(e);
     }
-    
+
 }
 
 // not usable 
 // TODO: find out reason why!
 const postRenderDoms = {
-    textAreaOfQuiz : document.querySelector(".quizAndAnswer div.creation textArea"),
+    textAreaOfQuiz: document.querySelector(".quizAndAnswer div.creation textArea"),
     textAreaOfAnswer: document.querySelector(".quizAndAnswer div.answer textArea"),
     tagsInput: document.querySelector(".input input"),
     date: document.querySelector(".date input"),
@@ -324,7 +517,6 @@ const postRenderDoms = {
 
 // return what user has typed for quiz
 function getQuizCreaionContent() {
-    console.log("quiz content", document.querySelector(".quizAndAnswer div.creation textArea").value);
     return document.querySelector(".quizAndAnswer div.creation textArea")?.value ?? "";
 };
 
@@ -342,13 +534,11 @@ function getTodayDate() {
 
 // return what user has typed for answer
 function getAnswerContent() {
-    console.log("answer content", document.querySelector(".quizAndAnswer div.answer textArea")?.value)
     return document.querySelector(".quizAndAnswer div.answer textArea")?.value ?? "";
 };
 
 // return what user has typed in tags
 function getTagInputs() {
-    console.log("tag content", document.querySelector(".input input")?.value);
     return document.querySelector(".input input")?.value ?? "";
 }
 
@@ -372,7 +562,7 @@ function createObjectOfInputs() {
             tag: tag,
             date: getSelectedDate(),
         }
-    
+
         return resultObj;
     }
 }
@@ -386,7 +576,7 @@ function resetInputs() {
 }
 
 // handle and change UI content based on banners button click
-function handleClick(event) {    
+function handleClick(event) {
     // add active if not active found;
     if (event.target.classList.contains("active")) {
         return;
@@ -426,10 +616,8 @@ initialDoms.bannersButtons.forEach(button => {
 
 function addSaveButtonEventListener() {
     let button = document.querySelector("button#save");
-    console.log(button);
 
-    button.addEventListener('click', function() {
-        console.log("saving the contnet to database!")
+    button.addEventListener('click', function () {
         // TODO: check if this quiz has been saved to database?
         // Assume we will never update quiz
         const obj = createObjectOfInputs();
@@ -443,12 +631,19 @@ function addSaveButtonEventListener() {
 
 // reset all the content of buttons.
 if (postRenderDoms.resetButton) {
-    postRenderDoms.resetButton.addEventListener('click', function() {
-    resetInputs();
-})
+    postRenderDoms.resetButton.addEventListener('click', function () {
+        resetInputs();
+    })
 }
 
-
+function addTagsEventListern() {
+    if (document.querySelector('.date input')) {
+        document.querySelector('.date input').addEventListener('change', function () {
+            renderAllTags();
+            renderTodayTags();
+        })
+    }
+}
 
 
 
