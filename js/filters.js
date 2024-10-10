@@ -15,17 +15,11 @@ class Filters {
         var previousQuizArray = await getPreviousQuizesFromDataBase() ?? [1, 2, 3];
         if (previousQuizArray[0] !== 1 && type === "today") {
             previousQuizArray = previousQuizArray.filter(quiz => needsReview(quiz));
-            for (let quiz of previousQuizArray) {
-                let count = map.get(quiz.tag) || 0;
-                map.set(quiz.tag, count + 1);
-            }
         } 
-
-        if (previousQuizArray[0] !== 1 && type === "history") {
-            for (let quiz of previousQuizArray) {
+        
+        for (let quiz of previousQuizArray) {
                 let count = map.get(quiz.tag) || 0;
                 map.set(quiz.tag, count + 1);
-            }
         }
 
         return map;
@@ -34,16 +28,13 @@ class Filters {
     // adding the filters into the webpage:
     async renderFilters(tag, order, type) {
         this.type = type;
-
         this.tag = tag;
         this.order = order;
-        // console.log("RenderFilters, tag, order: ", tag, order, this.tag, this.order);
 
         try {
             // get the data from backend
             const mongoDbAtlas = new MongoDBAtlas();
             const tags = await mongoDbAtlas.getAllTags(ROOT_USER_ID);
-            // console.log("Tags: ", tags);
 
             let tagOptions = ``;
             const tagMap = await this.getTagCount(this.type);
@@ -58,7 +49,6 @@ class Filters {
                 `
                 tagOptions += tagOption;
             }
-            // console.log(tagOptions);
 
             let quizHistoryContainer = document.querySelector('.filters-container');
             if (quizHistoryContainer) {
@@ -135,13 +125,11 @@ class Filters {
         this.type = type;
         let tag = document.querySelector('.filters form select#tag');
         this.order = this.getOrderValue();
-        // console.log("this.order: ", this.order);
 
         if (tag) {
                 tag.addEventListener('change', () => {
                 // get the value of the selected option;
                 let selectedValue = tag.value;
-
                 let parent = document.querySelector(".quiz");
                 parent.innerHTML = '';
 
@@ -150,15 +138,8 @@ class Filters {
                 // console.log(this.tag);
                 this.tag = selectedValue;
                 this.order = this.getOrderValue();
-
                 type = this.type === "today" ? false : null;
-                // console.log("type: ", type);
-
-
                 showPreviousQuizs(type, this.tag, this.order);
-
-                // console.log("tag value: ", selectedValue, this.tag);
-                // console.log("order value: ", this.order);
             })
         }
         
@@ -178,10 +159,7 @@ class Filters {
             parent.innerHTML = '';
             this.order = selectedValue;
             this.tag = this.getTagValue();
-
             type = this.type === "today" ? false : null;
-
-            // console.log("type: ", this.type);
             showPreviousQuizs(type, this.tag, this.order);
             })
         }

@@ -128,7 +128,7 @@ function needsReview(quiz) {
 
     const diffDays = (new Date(todayDate).getTime() - new Date(quizDate).getTime()) / (1000 * 3600 * 24);
     if ((quiz.results.length === 0 && diffDays !== 0) || 
-        [1,2,7,14,21,30,60].includes(diffDays)) {
+        [1,2,7,14,21,28,56].includes(diffDays)) {
             return true;    
     }
     else return false;
