@@ -54,7 +54,9 @@ function renderPage() {
         // case contentType.todayTask: 
         case "Today Task":
             initialDoms.contents.innerHTML = returnTodayTasks();
-            showPreviousQuizs();
+            // showPreviousQuizs();
+            filters.renderFilters(filters.tag, filters.order, "today");
+            showPreviousQuizs(false, filters.tag, filters.order);
             break;
         case "Daily Quiz Creation":
             initialDoms.contents.innerHTML = returnDailyQuizCreation();
@@ -65,7 +67,7 @@ function renderPage() {
             break;
         case "Quiz History":
             initialDoms.contents.innerHTML = returnQuizHistory();
-            filters.renderFilters(filters.tag, filters.order);
+            filters.renderFilters(filters.tag, filters.order, "history");
             showPreviousQuizs(true, filters.tag, filters.order);
             break;
     }
@@ -139,7 +141,7 @@ function replaceHtmlEntity(str) {
 // show all quizs under div.quiz
 async function showPreviousQuizs(showAll, tagValue, orderValue) {
     let changed = false;
-    console.log("showAll, tagValue, orderValue: ", showAll, tagValue, orderValue);
+    // console.log("showAll, tagValue, orderValue: ", showAll, tagValue, orderValue);
 
     try {
         // get quizs as an array and including todays.
@@ -172,7 +174,7 @@ async function showPreviousQuizs(showAll, tagValue, orderValue) {
                 // chronological:
                 case 3:
                     previousQuizArray.sort((a, b) => new Date(a.date) - new Date(b.date));
-                    console.log("previousQuizArray: ", previousQuizArray);
+                    // console.log("previousQuizArray: ", previousQuizArray);
                     break;
                 default: 
                     // console.log("the order value is not valid");
@@ -181,7 +183,7 @@ async function showPreviousQuizs(showAll, tagValue, orderValue) {
             changed = true;
         }
         
-        if (showAll === false && changed === false) {
+        if (showAll === false) {
             // previousQuizArray = previousQuizArray.filter(quiz => quiz.results.length === 0);
             previousQuizArray = previousQuizArray.filter(quiz => needsReview(quiz));
             // console.log("!showAll");
@@ -388,6 +390,7 @@ function returnTodayTasks() {
     return `
         <div class="todayTaskContainer">
             <p>Up to recent 3 day's Quiz</p>
+            <div class="filters-container"></div>
             <div class="quiz">
                 
                 

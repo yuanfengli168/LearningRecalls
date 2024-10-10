@@ -1,14 +1,43 @@
 class Filters {
-    constructor(tag = "", order = "1") {
+    constructor(tag = "", order = "1", type="today") {
         this.tag = tag;
         this.order = order;
+        this.type = type;
+    }
+
+
+    // type is in string format
+    async getTagCount(type) {
+        // make a map of key (tag), value (number)
+        const map = new Map();
+
+        // get the array of quizes:
+        var previousQuizArray = await getPreviousQuizesFromDataBase() ?? [1, 2, 3];
+        if (previousQuizArray[0] !== 1 && type === "today") {
+            previousQuizArray = previousQuizArray.filter(quiz => needsReview(quiz));
+            for (let quiz of previousQuizArray) {
+                let count = map.get(quiz.tag) || 0;
+                map.set(quiz.tag, count + 1);
+            }
+        } 
+
+        if (previousQuizArray[0] !== 1 && type === "history") {
+            for (let quiz of previousQuizArray) {
+                let count = map.get(quiz.tag) || 0;
+                map.set(quiz.tag, count + 1);
+            }
+        }
+
+        return map;
     }
 
     // adding the filters into the webpage:
-    async renderFilters(tag, order) {
+    async renderFilters(tag, order, type) {
+        this.type = type;
+
         this.tag = tag;
         this.order = order;
-        console.log("RenderFilters, tag, order: ", tag, order, this.tag, this.order);
+        // console.log("RenderFilters, tag, order: ", tag, order, this.tag, this.order);
 
         try {
             // get the data from backend
@@ -17,17 +46,21 @@ class Filters {
             // console.log("Tags: ", tags);
 
             let tagOptions = ``;
+            const tagMap = await this.getTagCount(this.type);
+
             for (let tag of tags) {
+                let tagCount = tagMap.get(tag) || 0;
+
                 let tagOption = `
                      <option value=${tag}>
-                        ${tag}
+                        ${tag} (${tagCount})
                     </option>
                 `
                 tagOptions += tagOption;
             }
             // console.log(tagOptions);
 
-            let quizHistoryContainer = document.querySelector('.QuizHistoryContainer .filters-container');
+            let quizHistoryContainer = document.querySelector('.filters-container');
             if (quizHistoryContainer) {
                 let newChild = document.createElement('div');
                 let filterContent = `
@@ -60,8 +93,8 @@ class Filters {
                 parentElemnt.appendChild(newChild);
 
 
-                this.addOrderEventListener();
-                this.addTagEventListener();
+                this.addOrderEventListener(type);
+                this.addTagEventListener(type);
 
                 this.setTagValue(tag);
                 this.setOrderValue(order);
@@ -98,7 +131,8 @@ class Filters {
 
     // bug1: this.order in the function() {} 
     //       the this is referring to the functio instead of the class.
-    addTagEventListener() {
+    addTagEventListener(type) {
+        this.type = type;
         let tag = document.querySelector('.filters form select#tag');
         this.order = this.getOrderValue();
         // console.log("this.order: ", this.order);
@@ -113,10 +147,15 @@ class Filters {
 
                 // ??? will the arrow function helping 
                 //     making this reference to the class instead of function?
-                console.log(this.tag);
+                // console.log(this.tag);
                 this.tag = selectedValue;
                 this.order = this.getOrderValue();
-                showPreviousQuizs(null, this.tag, this.order);
+
+                type = this.type === "today" ? false : null;
+                // console.log("type: ", type);
+
+
+                showPreviousQuizs(type, this.tag, this.order);
 
                 // console.log("tag value: ", selectedValue, this.tag);
                 // console.log("order value: ", this.order);
@@ -125,10 +164,12 @@ class Filters {
         
     }
 
-    addOrderEventListener() {
+    addOrderEventListener(type) {
+        this.type = type;
+
         let order = document.querySelector('.filters form select#order');
         this.tag = this.getTagValue();
-        // console.log("this.tag: ", this.tag);
+        
 
         if (order) {
             order.addEventListener('change', () => {
@@ -137,7 +178,11 @@ class Filters {
             parent.innerHTML = '';
             this.order = selectedValue;
             this.tag = this.getTagValue();
-            showPreviousQuizs(null, this.tag, this.order);
+
+            type = this.type === "today" ? false : null;
+
+            // console.log("type: ", this.type);
+            showPreviousQuizs(type, this.tag, this.order);
             })
         }
         
