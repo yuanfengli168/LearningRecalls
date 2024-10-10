@@ -1,0 +1,13 @@
+div.filters {
+    margin-top: 20px;
+}
+
+
+div.filters form {
+    display: flex;
+    gap: 15px;
+}
+
+.filters label {
+    font-weight: normal;
+}

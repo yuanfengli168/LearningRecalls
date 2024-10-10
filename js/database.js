@@ -125,7 +125,7 @@ class MongoDBAtlas {
     }
   }
 
-
+  // return array of string format of tags
   async getAllTags(userID, date) {
     try{
       let response;

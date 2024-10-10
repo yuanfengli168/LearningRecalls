@@ -14,6 +14,9 @@ const initialDoms = {
     quizButtons: null,
 }
 
+// build a filter instance
+const filters = new Filters();
+
 // UIs
 /**
  * find which banners button has active in its class, 
@@ -62,7 +65,8 @@ function renderPage() {
             break;
         case "Quiz History":
             initialDoms.contents.innerHTML = returnQuizHistory();
-            showPreviousQuizs(true);
+            filters.renderFilters(filters.tag, filters.order);
+            showPreviousQuizs(true, filters.tag, filters.order);
             break;
     }
 }
@@ -107,6 +111,7 @@ function returnQuizHistory() {
     return `
         <div class="QuizHistoryContainer">
             <p>All Past Quizs</p>
+            <div class="filters-container"></div>
             <div class="quiz">
                 
                 
@@ -115,21 +120,76 @@ function returnQuizHistory() {
     `;
 }
 
+function needsReview(quiz) {
+    const todayDate = getTodayDate();
+    const quizDate = quiz.date;
+
+    const diffDays = (new Date(todayDate).getTime() - new Date(quizDate).getTime()) / (1000 * 3600 * 24);
+    if ((quiz.results.length === 0 && diffDays !== 0) || 
+        [1,2,7,14,21,30,60].includes(diffDays)) {
+            return true;    
+    }
+    else return false;
+}
+
+function replaceHtmlEntity(str) {
+    return str.replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+}
+
 // show all quizs under div.quiz
-async function showPreviousQuizs(showAll) {
+async function showPreviousQuizs(showAll, tagValue, orderValue) {
+    let changed = false;
+    console.log("showAll, tagValue, orderValue: ", showAll, tagValue, orderValue);
+
     try {
         // get quizs as an array and including todays.
         var previousQuizArray = await getPreviousQuizesFromDataBase() ?? [1, 2, 3];
         if (previousQuizArray[0] !== 1) {
-            previousQuizArray.sort((a, b) => new Date(a.date) - new Date(b.date));
+            previousQuizArray.sort((a, b) => new Date(b.date) - new Date(a.date));
             dataArray = previousQuizArray;
         }
 
-        // get all quiz that has not been finished.
-        if (!showAll) {
-            previousQuizArray = previousQuizArray.filter(quiz => quiz.results.length === 0);
-        }
 
+
+        // get all quiz that has not been finished.
+        // get quiz that is 7 days ago, or one month ago, or two month ago
+        
+        if (tagValue && tagValue !== "") {
+            previousQuizArray = previousQuizArray.filter(quiz => quiz.tag === tagValue);
+            changed = true;
+        }
+        
+        // bug1, please see the typeof case, I was struggling because 2 !== "2"; type is different.
+        // bug2, the order must all have new in front of the Date(), new was missing
+        if (orderValue && orderValue > 1) {
+
+            switch(parseInt(orderValue)) {
+                // non-chronological:
+                case 2:
+                    previousQuizArray.sort((a, b) => new Date(b.date) - new Date(a.date));
+                    // console.log("previousQuizArray: ", previousQuizArray);
+                    break;
+                // chronological:
+                case 3:
+                    previousQuizArray.sort((a, b) => new Date(a.date) - new Date(b.date));
+                    console.log("previousQuizArray: ", previousQuizArray);
+                    break;
+                default: 
+                    // console.log("the order value is not valid");
+                    break;
+            }
+            changed = true;
+        }
+        
+        if (showAll === false && changed === false) {
+            // previousQuizArray = previousQuizArray.filter(quiz => quiz.results.length === 0);
+            previousQuizArray = previousQuizArray.filter(quiz => needsReview(quiz));
+            // console.log("!showAll");
+        } 
+        if (showAll === true && changed === false) {
+            previousQuizArray.sort((a, b) => new Date(b.date) -  new Date(a.date));
+            // console.log("showAll");
+        }
 
         if (previousQuizArray && previousQuizArray.length > 0) {
             for (let i = 0; i < previousQuizArray.length; i++) {
@@ -144,6 +204,8 @@ async function showPreviousQuizs(showAll) {
                 let numbers2 = quizContent === "unfound" ? 0 : quizContent.trim().split("\n").length;
                 let numbers = Math.min(numbers1, numbers2);
 
+                // should substitute <, > whith html entity in quizContent, and Answer so to make it easier.
+                quizContent = replaceHtmlEntity(quizContent);
 
                 const newQuizTab = document.createElement('div');
                 newQuizTab.classList.add("quiz-item")
@@ -151,11 +213,11 @@ async function showPreviousQuizs(showAll) {
                     `<div class="quiz-cards ${i}">
                             <div class="card-content">
                                 <h3>Date: ${date}, Tag: ${tag}, Numbers: ${numbers}</h3>
-                                <p>${quizContent}</p>
+                                <pre>${quizContent}</pre>
                             </div>
-                                <button class="take">Take quiz</button>
-                                <button class="logs">Logs v</button>
-                            </div>
+                            <button class="take">Take quiz</button>
+                            <button class="logs">Logs v</button>
+                            
                     </div>
                     <div class="card-logs-${i}">
 
@@ -163,6 +225,7 @@ async function showPreviousQuizs(showAll) {
                     `
 
                 let parent = document.querySelector(".quiz");
+
                 parent.appendChild(newQuizTab);
 
             }
@@ -194,6 +257,7 @@ async function showPreviousQuizs(showAll) {
     return;
 }
 
+// return the previous score, by clicking the `Logs v` button.
 function renderLogsOfIndex(idx, previousQuizArray, isHidden) {
     // get results
     let quiz = previousQuizArray[idx];
@@ -206,7 +270,7 @@ function renderLogsOfIndex(idx, previousQuizArray, isHidden) {
     else {
         if (quiz.results.length > 0) {
             // only get most recent 5 times score! for logs!
-            for (const res of quiz.results.slice(-5)) {
+            for (const res of quiz.results.slice(-5).reverse()) {
                 const finishedDateAndTime = res.finishedDateTime;
                 const score = res.score;
 
@@ -245,25 +309,6 @@ async function getPreviousQuizesFromDataBase() {
 
     // const datesObject = mongoDbAtlas.getAllQuiz();
     const result = [];
-    // this was ok, but was not the best practices.
-    // for (const property in datesObject) {
-    //     const obj = {};
-    //     obj.date = property;
-    //     console.log("date: ", property);
-
-    //     const tagObject = datesObject[property];
-    //     for (const tagProperty in tagObject) {
-    //         const tag = tagObject[tagProperty];
-    //         obj.tag = tag.quizTags;
-    //         obj.content = tag.quizContent;
-    //         obj.answer = tag.quizAnswerContent;
-    //         obj.hasFinished = tag.hasFinished;
-    //         obj.results = tag.results;
-
-    //         console.log("obj: ", obj);
-    //         result.push({...obj}); // !!! one of the bug
-    //     }
-    // }
 
     for (const property in datesObject) {
         const tagObject = datesObject[property];
@@ -331,7 +376,6 @@ function returnDailyQuizCreation() {
 
             <div class="buttons">
                 <button id="save">Save Quiz and Answer</button>
-                <button disabled>Update Quiz and Answer</button>
                 <button disabled>Append to Same Tag Today</button>
                 <button id="reset">Reset Quiz and Answer</button>
             </div>
@@ -352,10 +396,6 @@ function returnTodayTasks() {
             <div class="Exam">Last Month's Exam on First Week's Monday</div>
         </div>
     `;
-}
-
-function transferContentIntoLines(contentStr) {
-
 }
 
 function getCurrentTime() {
@@ -384,8 +424,11 @@ function renderQuizOfIndex(index, previousQuizArray) {
     let data = previousQuizArray[index];
     let date = data.date;
     let tag = data.tag;
-    let quiz = data.content;
-    let answer = data.answer;
+    // let quiz = data.content;
+    // let answer = data.answer;
+
+    let quiz = replaceHtmlEntity(data.content);
+    let answer = replaceHtmlEntity(data.answer);
 
     const parent = document.querySelector(".contents");
     const newElementHTML = `

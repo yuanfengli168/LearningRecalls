@@ -192,9 +192,10 @@ div .dailyQuizCreation .buttons {
         font-size: 20px;
     }
 
-    p {
+    pre {
         font-size: 16px;
         font-weight: 400;
+        overflow: hidden;
     }
 }
 
@@ -331,4 +332,10 @@ span.failed {
     &.hide {
         background-color: gray;
     }
+}
+
+
+.QuizHistoryContainer p {
+    font-size: 16px;
+    font-weight: bold;
 }
