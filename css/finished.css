@@ -1,0 +1,6 @@
+div .today-finished {
+    background-color: lightblue;
+    border-radius: 16px;
+    box-sizing: border-box;
+    padding: 1rem;
+}

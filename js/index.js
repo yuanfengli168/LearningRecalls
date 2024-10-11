@@ -57,6 +57,11 @@ function renderPage() {
             // showPreviousQuizs();
             filters.renderFilters(filters.tag, filters.order, "today");
             showPreviousQuizs(false, filters.tag, filters.order);
+            // should instantiate a new instance, so no coupling with 
+            // Today task and Quiz History
+            const finished = new Finished();
+            finished.addQuizCardToParent();
+
             break;
         case "Daily Quiz Creation":
             initialDoms.contents.innerHTML = returnDailyQuizCreation();
@@ -233,6 +238,13 @@ async function showPreviousQuizs(showAll, tagValue, orderValue) {
             }
         }
 
+        // Not decoubpled very well: I am adding a new section: "Today's finished "
+        // on the same page but will we need to use the same index? it might not 
+        // return correct contents: 
+        // @date: oct112024
+        // @author: yuanfengl
+        // @todo: fix in finished.js in version1.0
+        //        fix here in version2.0
         let quizButton = document.querySelectorAll('button.take');
         quizButton.forEach((button, index) => {
             let idx = index;
@@ -260,7 +272,7 @@ async function showPreviousQuizs(showAll, tagValue, orderValue) {
 }
 
 // return the previous score, by clicking the `Logs v` button.
-function renderLogsOfIndex(idx, previousQuizArray, isHidden) {
+function renderLogsOfIndex(idx, previousQuizArray, isHidden, parent) {
     // get results
     let quiz = previousQuizArray[idx];
     var element = `<h4>Logs:</h4>`;
@@ -284,7 +296,14 @@ function renderLogsOfIndex(idx, previousQuizArray, isHidden) {
             element = `<p>There is no logs available yet, please take the quiz!!!`;
         }
     }
-    let parent = document.querySelector(`.card-logs-${idx}`);
+
+    // if argument of parent is undefined/null, 
+    // we use the first of we can find in the page
+    // need to update: 
+    if (!parent) {
+        parent = document.querySelector(`.card-logs-${idx}`);
+    }
+    
     parent.innerHTML = element;
 
 
@@ -395,8 +414,14 @@ function returnTodayTasks() {
                 
                 
             </div>
+
+            <div class="today-finished">
+                Today's Finished:
+            </div>
+            <!-- TODO in version 2.0
             <div class="test">Last week's Test on Monday</div>
-            <div class="Exam">Last Month's Exam on First Week's Monday</div>
+            <div class="Exam">Last Month's Exam on First Week's Monday</div> 
+            -->
         </div>
     `;
 }
