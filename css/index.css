@@ -8,7 +8,7 @@ body {
     text-align: center;
 }
 
-/* /* Adding this because something wrong: 
+/* Adding this because something wrong: 
 index.html:1 Refused to apply style from 'http://127.0.0.1:5502/reset.css' because its MIME type ('text/html') 
 is not a supported stylesheet MIME type, and strict MIME checking is enabled.
 
@@ -16,7 +16,7 @@ Not sure why so far:
 @date: 10/14/2024
 @author: Yuanfeng Li
 */
-div {
+/* div {
     color: black !important;
 } */
 
