@@ -23,14 +23,24 @@ class Finished {
 
         const result = [];
         for (let quiz of arrayOfQuizs) {
-            let results = quiz.results;
-            for (let res of Array.from(results)) {
-                let finishedDateTime  = res.finishedDateTime;
-                let dateFinished = finishedDateTime.split(" ")[0];
+            let results = Array.from(quiz.results);
+
+            if (results.length > 0) {
+                let lastResult = results.at(-1);
+                let lastFinishedDateTime = lastResult.finishedDateTime;
+                let dateFinished = lastFinishedDateTime.split(" ")[0];
                 if (dateFinished === date) {
                     result.push(quiz);
                 }
             }
+            // // bug: no need to have for here.
+            // for (let res of Array.from(results)) {
+            //     let finishedDateTime  = res.finishedDateTime;
+            //     let dateFinished = finishedDateTime.split(" ")[0];
+            //     if (dateFinished === date) {
+            //         result.push(quiz);
+            //     }
+            // }
         }
 
         // it might still be duplicate:

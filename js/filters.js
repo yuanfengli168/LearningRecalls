@@ -38,9 +38,11 @@ class Filters {
 
             let tagOptions = ``;
             const tagMap = await this.getTagCount(this.type);
+            let totalCount = 0;
 
             for (let tag of tags) {
                 let tagCount = tagMap.get(tag) || 0;
+                totalCount += tagCount;
 
                 let tagOption = `
                      <option value=${tag}>
@@ -59,7 +61,7 @@ class Filters {
                             <label for="filter-select">Filters: </label>
                             <select name="" id="tag">
                                 <option value="">
-                                    choose one tag
+                                    choose one tag (${totalCount})
                                 </option>
                                 ${tagOptions}
                             </select>

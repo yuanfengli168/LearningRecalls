@@ -4,7 +4,12 @@
 
 
 4. (10/10/2024) 
-a) add a finished today tab; (finished 10/11/2024 in 3.5 hours, but scalable, and reusable, more succinct);
+-1）if not full points received, put last wrong no. in front, and change the color of these to red
+
+0) adding favorite/mastered button in the quiz tab && take quiz page.
+
+
+a) [done]add a finished today tab; (finished 10/11/2024 in 3.5 hours, but scalable, and reusable, more succinct);
 [Learnings]:
     a)  encapsulation+consice!!! -> each mehtod function do not exceed 30lines of code, excluding comments. 
     b) decoupling -> utils.js created, very good!
@@ -24,4 +29,8 @@ c) add rules of writing, so writers can use them! e.g. 1.2.3. / (1,2,3a) / .,.
 below are optional
 c) add last time wrongs in tag quiz.
 d) when loading adding a circling thing.
+
+
+e) fix the toggle functions, with the help of chatGPT: (https://chatgpt.com/share/670f0b16-026c-800a-8a8f-71f88aed4752), see the third questions solution. 
+
 

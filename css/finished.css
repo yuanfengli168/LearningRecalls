@@ -1,6 +1,12 @@
 div .today-finished {
-    background-color: lightblue;
+
+    margin: 16px 0;
     border-radius: 16px;
     box-sizing: border-box;
-    padding: 1rem;
+}
+
+div .today-finished .finished-quiz {
+    padding-left: 8px;
+    background-color: lightblue;
+    overflow-y: scroll;
 }

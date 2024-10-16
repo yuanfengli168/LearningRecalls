@@ -9,12 +9,25 @@ async function getOriginalQuizs() {
     }
 }
 
+// return number of Questions for quiz Content: 
+function getNumbersOfQuestions(quizContent) {
+    let numbers1Match = quizContent === "unfound" ? 0 : quizContent.match(/\d+\./g);
+    let numbers1 = numbers1Match === 0 || numbers1Match === null ? 0 : numbers1Match.length;
+    let numbers2 = quizContent === "unfound" ? 0 : quizContent.trim().split("\n").length;
+    let numbers = Math.min(numbers1, numbers2);
+
+    return numbers;
+}
+
 // create quizCard in html format: 
 function createQuizCard(quiz, i) {
     let date, tag, numbers, quizContent;
     date = quiz.date ?? "unfound";
     quizContent = quiz.content ?? "unfound";
     tag = quiz.tag;
+    numbers = getNumbersOfQuestions(quizContent);
+
+    
 
     const quizCard = `
     <div class="quiz-item">

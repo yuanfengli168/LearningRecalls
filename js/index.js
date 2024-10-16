@@ -95,6 +95,37 @@ async function renderAllTags() {
     parent.innerHTML = span;
 }
 
+
+// async function renderAllTags() {
+//     const spinner = document.getElementById('spinner');
+//     spinner.style.display = 'block';
+
+//     try {
+//             // get the data from backend
+//         const mongoDbAtlas = new MongoDBAtlas();
+//         const tags = await mongoDbAtlas.getAllTags(ROOT_USER_ID);
+
+//         let parent = document.querySelector(".allTags");
+//         let span = '';
+//         if (tags.length <= 0) {
+//             span = '<i>No Tags found</i>';
+//         } else {
+//             for (let tag of tags) {
+//                 span += `<p>${tag}</p>`
+//             }
+//         }
+//         parent.innerHTML = span;
+//     }
+//     catch (e) {
+//         console.error(e);
+//     } 
+//     finally {
+//         spinner.style.display = 'none';
+//     }
+
+    
+// }
+
 async function renderTodayTags() {
     // get the data from backend
     const mongoDbAtlas = new MongoDBAtlas();
@@ -132,8 +163,9 @@ function needsReview(quiz) {
     const quizDate = quiz.date;
 
     const diffDays = (new Date(todayDate).getTime() - new Date(quizDate).getTime()) / (1000 * 3600 * 24);
+
     if ((quiz.results.length === 0 && diffDays !== 0) || 
-        [1,2,7,14,21,28,56].includes(diffDays)) {
+        [1,2,7,14,21,28,56].includes(diffDays) && Array.from(quiz.results).at(-1).finishedDateTime.split(" ")[0] !== todayDate) {
             return true;    
     }
     else return false;
@@ -204,12 +236,7 @@ async function showPreviousQuizs(showAll, tagValue, orderValue) {
                 let date = quiz.date ?? "unfound";
                 let quizContent = quiz.content ?? "unfound";
                 let tag = quiz.tag;
-
-                let numbers1Match = quizContent === "unfound" ? 0 : quizContent.match(/\d+\./g);
-
-                let numbers1 = numbers1Match === 0 || numbers1Match === null ? 0 : numbers1Match.length;
-                let numbers2 = quizContent === "unfound" ? 0 : quizContent.trim().split("\n").length;
-                let numbers = Math.min(numbers1, numbers2);
+                let numbers = getNumbersOfQuestions(quizContent);
 
                 // should substitute <, > whith html entity in quizContent, and Answer so to make it easier.
                 quizContent = replaceHtmlEntity(quizContent);
@@ -311,10 +338,11 @@ function renderLogsOfIndex(idx, previousQuizArray, isHidden, parent) {
     // the hide is not good for now.
     // you have to click button twice.
     let hideLogs = document.querySelectorAll('.hide');
-    hideLogs.forEach((button) => {
+    hideLogs.forEach((button, index) => {
         // let idx = index;
         button.addEventListener('click', function () {
             // button.classList.remove("hide");
+            console.log("index, clicked: ", index)
             renderPage();
         })
     })
@@ -385,6 +413,7 @@ function returnDailyQuizCreation() {
                 <div class="history">
                     <p><b>Used Tags</b></p>
                     <div class="allTags tabs">
+                        
                         
                     </div>
                     <hr>
