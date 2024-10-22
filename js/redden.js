@@ -58,77 +58,128 @@ class Redden {
             return content;
         }
         else {
-            // let prefix = `<span style="color: red;">I am red!!!</span>`;
-            // let result = prefix + content;
-            console.log("lines: ", lines);
-            for (let line of lines) {
-                let number = parseInt(line);
-                if (isNaN(number)) {
-                    continue;
-                } 
-                else {
-                    content = this.addRedSpanToLine(number, content);
-                }
-            }
+            // // let prefix = `<span style="color: red;">I am red!!!</span>`;
+            // // let result = prefix + content;
+            // console.log("lines: ", lines);
+            // for (let line of lines) {
+            //     let number = parseInt(line);
+            //     if (isNaN(number)) {
+            //         continue;
+            //     } 
+            //     else {
+            //         content = this.addRedSpanToLine(number, content);
+            //     }
+            // }
 
+            // return content;
+
+            content = this.addRedSpanToLine(lines, content);
             return content;
         }
     }
 
-    // returns a new content only at the number passed into the function
-    addRedSpanToLine(number, content) {
-        let prefixIndexs = [];
-        let postfixIndexs = [];
+    addRedSpanToLine(lines, content) {
+        lines = lines.map(x => !isNaN(parseInt(x)) ? parseInt(x) : -1);
+        lines.sort((a, b) => a - b);
 
-        for (let i = 0; i < content.length; i++) {
-            // console.log("numbers: line content: ", number, i, content[i]);
-            let char = content[i];
+        // console.log(lines);
+        let arrOfContent = content.split("\n");
+        // console.log(arrOfContent);
 
-            if (char == number && content[i+1] === ".") {
-                // we are at the beginning of the line!!
-                // let temp = this.insertString(content, ` <span style="color: red;">I am red!!!</span> \n`, i)
-                // console.log("content: ", temp);
-                // console.log("yess!!!!")
-                
-                // content = "1111" + content;
-                // content = this.insertString(content, ` <span style="color: red;">I am red!!!</span> \n`, i)
+        let arrOfResult = [];
 
-                // console.log(typeof content);
-                // // bug: stackoverflowed: because your for's i is refreshing all the time;
-                // content = ` <span style="color: red;">I am red!!!</span> \n` + content;
-                // console.log(content);       
 
-                prefixIndexs.push(i);
-                while (i < content.length) {
-                    if (content[i] === '\n') {
-                        postfixIndexs.push(i);
-                        break;
-                    }
-                    i++;
-                }
-            }
+        
+        lines = lines.map(x => x + "");
+        // console.log(lines, typeof lines);
+
+        for (let con of arrOfContent) {
+            if (this.matchString(con) && this.matchLines(lines, con)) {
+                con = `<span style="color: red;">` + con + "</span>";
+                // console.log("Matched: ", con);
+            } 
+            arrOfResult.push(con);
         }
 
-        // content = ` <span style="color: red;">I am red!!!</span> \n` + content;
-        // console.log(resultIndexs);
-        console.log(postfixIndexs);
-
-        // let str = ` <span style="color: red;">I am red!!!</span> \n`;
-        let prefix = `<span style="color: red;">`;
-        let offset = 0;
-        let arrOfRes = this.insertMultipleStrings(content, prefixIndexs, prefix, offset);
-        content = arrOfRes[0];
-        offset = arrOfRes[1];
-
-        let postfix = '</span>';
-        arrOfRes = this.insertMultipleStrings(content, postfixIndexs, postfix, offset);
-        content = arrOfRes[0];
-        offset = arrOfRes[1];
-
-        console.log("CONTENT: ", content);
-        
-        return content;
+        let result = arrOfResult.join("\n");
+        // console.log("Result: ", arrOfResult);
+        return result;
     }
+
+    matchLines(lines, con) {
+        // console.log(lines);
+        // console.log(con);
+
+        let matched = con.match(/^\d+\./);
+        // console.log("Matched: ", matched[0].slice(0, -1),);
+
+
+        return lines.includes(matched[0].slice(0, -1))
+    }
+
+    matchString(str) {
+        const regex = /^\d+\./;
+        return regex.test(str);
+    }
+
+
+
+
+    // // returns a new content only at the number passed into the function
+    // // number is an array of numbers representing the No. of the line
+    // addRedSpanToLine(number, content) {
+    //     let prefixIndexs = [];
+    //     let postfixIndexs = [];
+
+    //     for (let i = 0; i < content.length; i++) {
+    //         // console.log("numbers: line content: ", number, i, content[i]);
+    //         let char = content[i];
+
+    //         if (char == number && content[i+1] === ".") {
+    //             // we are at the beginning of the line!!
+    //             // let temp = this.insertString(content, ` <span style="color: red;">I am red!!!</span> \n`, i)
+    //             // console.log("content: ", temp);
+    //             // console.log("yess!!!!")
+                
+    //             // content = "1111" + content;
+    //             // content = this.insertString(content, ` <span style="color: red;">I am red!!!</span> \n`, i)
+
+    //             // console.log(typeof content);
+    //             // // bug: stackoverflowed: because your for's i is refreshing all the time;
+    //             // content = ` <span style="color: red;">I am red!!!</span> \n` + content;
+    //             // console.log(content);       
+
+    //             prefixIndexs.push(i);
+    //             while (i < content.length) {
+    //                 if (content[i] === '\n') {
+    //                     postfixIndexs.push(i);
+    //                     break;
+    //                 }
+    //                 i++;
+    //             }
+    //         }
+    //     }
+
+    //     // content = ` <span style="color: red;">I am red!!!</span> \n` + content;
+    //     // console.log(resultIndexs);
+    //     console.log(postfixIndexs);
+
+    //     // let str = ` <span style="color: red;">I am red!!!</span> \n`;
+    //     let prefix = `<span style="color: red;">`;
+    //     let offset = 0;
+    //     let arrOfRes = this.insertMultipleStrings(content, prefixIndexs, prefix, offset);
+    //     content = arrOfRes[0];
+    //     offset = arrOfRes[1];
+
+    //     let postfix = '</span>';
+    //     arrOfRes = this.insertMultipleStrings(content, postfixIndexs, postfix, offset);
+    //     content = arrOfRes[0];
+    //     offset = arrOfRes[1];
+
+    //     console.log("CONTENT: ", content);
+        
+    //     return content;
+    // }
 
     // can only insert one index,
     // insertString(original, insert, index) {
