@@ -487,6 +487,12 @@ function renderQuizOfIndex(index, previousQuizArray) {
     let quiz = replaceHtmlEntity(data.content);
     let answer = replaceHtmlEntity(data.answer);
 
+    // we want quiz to be redden if needs to 
+    const redden = new Redden();
+    const lines = redden.getWrongLines(data.results); // will return [] if none;
+    quiz = redden.makeLinesRed(quiz, lines);
+    answer = redden.makeLinesRed(answer, lines);
+
     const parent = document.querySelector(".contents");
     const newElementHTML = `
         <div class="takeQuiz">
