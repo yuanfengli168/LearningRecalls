@@ -265,6 +265,7 @@ div .quiz-item {
 }
 
 .takeQuiz .threeParts {
+    margin: 16px 0;
     display: flex;
     flex-direction: row;
     flex-grow: 1;
