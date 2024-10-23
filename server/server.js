@@ -31,6 +31,7 @@ class DBClient {
     this.dbClient = dbClient ?? null;
     this.db = this.getDatabase(this.defaultDBName);
     this.collection = this.getCollection(this.defaultCollectionName);
+    this.document = null;
   }
 
   // get db by dbName;
@@ -238,6 +239,8 @@ app.get('/api/all-tags', async(req, res) => {
 
     const collection = dbClientClass.getColInDB(COLLECTION_NAME, DB_NAME);
     const document = await dbClientClass.findUserIDInCol(userID, collection);
+    // very fast retrieval, will get the document only once!!
+    this.document = document;
 
     // for unknow reason this will never work.
     // const objectOfDates = await dbClientClass.getObjectOfDates(userID);
@@ -257,6 +260,7 @@ app.get('/api/all-tags', async(req, res) => {
     res.json(resultArray);
   }
   catch (e) {
+    // do not worry about this error in version 1.0
     console.error(e);
   }
 });
@@ -265,21 +269,21 @@ app.get('/api/all-tags', async(req, res) => {
 app.get('/api/today-tags', async(req, res) => {
   try {
     const query = req.query;
-    const userID = +query.userID;
     const date = query.date;
 
-    const collection = dbClientClass.getColInDB(COLLECTION_NAME, DB_NAME);
-    const document = await dbClientClass.findUserIDInCol(userID, collection);
-
-    const mapOfDates = document.dates;
-    const set = new Set();
-
-    for (const [tag, objectOfData] of transferObjectToMap(mapOfDates[date])) {
-      set.add(tag);
+    const mapOfDates = this.document?.dates;
+    if (!mapOfDates || !mapOfDates[date]) {
+      res.json([]);
     }
-    
-    const resultArray = [...set];
-    res.json(resultArray);
+    else {  
+      const set = new Set();
+      for (const [tag, objectOfData] of transferObjectToMap(mapOfDates[date])) {
+        set.add(tag);
+      }
+      
+      const resultArray = [...set];
+      res.json(resultArray);
+    }
   }
   catch (e) {
     console.error(e);
@@ -287,6 +291,35 @@ app.get('/api/today-tags', async(req, res) => {
   }
 })
 
+// return only one row of data by date and tag: 
+app.get('/api/contents-and-answers', async(req, res) => {
+  try {
+    const query = req.query;
+    const userID = +query.userID;
+    const date = query.date;
+    const tag = query.tag;
+
+    // TODO: see why this is not working? 
+    // // not sure why the following won't work, so not using it
+    // const collection = dbClientClass.getColInDB(COLLECTION_NAME, DB_NAME);
+    // const document = await dbClientClass.findUserIDInCol(userID, collection);
+
+    const document = this.document;
+    // bug1: why the objectOfDates is showing as an null for all times?
+    const objectOfDates = document.dates;
+    const rowOfDate = objectOfDates[date][tag]; // should never return null;
+
+    res.json(rowOfDate);
+  }
+  catch (e) {
+    console.error(e);
+    res.json({});
+  }
+})
+
+/*
+Helper Functions below!
+*/
 // return a key of array
 // by decreasing order of count
 function sortMap(map) {
@@ -320,31 +353,6 @@ function transferMapToObject(map) {
 function transferObjectToMap(obj) {
   return new Map(Object.entries(obj));
 }
-
-
-// /**
-//  * Return the collection object from mongoClient
-//  * @param {string, string} collection, database
-//  * @param {db.collection} database collection type
-//  * @returns 
-//  */
-// function getColInDB(collection, database) {
-//     let db = dbClient.db(database);
-//     let dbCollection = db.collection(collection);
-
-//     return dbCollection;
-// }
-
-// /**
-//  * return true or false for the document
-//  * @param {string} userID 
-//  * @param {collection in mongoClient} collection 
-//  */
-// async function findUserIDInCol(userID, collection) {
-//   const document = await collection.findOne({userID: userID});
-//   return document;
-// }
-
 
 // SERVER
 // Handle server shutdown

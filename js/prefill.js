@@ -12,7 +12,8 @@ class Prefill {
         let quiz, answer;
         
         try {
-            let res = await this.mongodbAtls.getContentAndAnswer(date, tag);
+            // let res = await this.mongodbAtls.getContentAndAnswer(date, tag);
+            let res = await this.mongodbAtls.getContentAndAnswerByQuery(ROOT_USER_ID, date, tag);
             quiz = res[0];
             answer = res[1];
 

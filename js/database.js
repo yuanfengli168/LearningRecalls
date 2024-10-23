@@ -27,6 +27,9 @@ class MongoDBAtlas {
     }
   }
 
+  // optimizing the time
+  // hopefully the time can be seen faster while retrieving 
+  // data
   // a succeeded function from getAllQuiz(), which will
   // return the only one quiz by the date and the tag:
   async getContentAndAnswer(date, tag) {
@@ -174,6 +177,31 @@ class MongoDBAtlas {
     catch (e) {
       console.error(e);
     }
+  }
+
+  async getContentAndAnswerByQuery(userID, date, tag) {
+    try {
+      let response;
+
+      // date and tag will always be valid:
+      response = await fetch(`http://localhost:5001/api/contents-and-answers?
+                              userID=${userID}&date=${date}&tag=${tag}`, {
+        method: "GET",
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      });
+      if (!response.ok) {
+        throw new Error("contents-and-answers api errors occured!")
+      }
+
+      const data = await response.json();
+      return [data.quizContent, data.quizAnswerContent];
+    }
+    catch (e) {
+      console.error(e);
+    }
+
   }
 
   // return quiz
