@@ -67,6 +67,7 @@ function renderPage() {
             initialDoms.contents.innerHTML = returnDailyQuizCreation();
             renderAllTags();
             renderTodayTags();
+            addEventListenerOfResetDate();
             addSaveButtonEventListener();
             addTagsEventListern();
             addEventListenerOfResetButton();
@@ -382,8 +383,10 @@ function returnDailyQuizCreation() {
     return `
         <div class="dailyQuizCreation">
             <div class="date">
-                <h4>Today's Date</h4>
+                <h4>Today's Date</h4> 
+                
                 <input type="date" value=${formattedDate}></input>
+                <button class="resetDate">Reset date</button>
             </div>
             <div class="quizAndAnswer">
                 <div class="creation">
@@ -423,7 +426,7 @@ function returnDailyQuizCreation() {
             <div class="buttons">
                 <button id="save">Save Quiz and Answer</button>
                 <button disabled>Append to Same Tag Today</button>
-                <button id="reset">Reset Quiz and Answer</button>
+                <button id="reset">Reset quiz, answer, tag</button>
             </div>
 
         </div>
@@ -671,7 +674,7 @@ function createObjectOfInputs() {
 
 // clear all inputs of user's input, date will return to today's date.
 function resetInputs() {
-    // TODO create an class to do it sooner and faster!!
+    // TODO: create an class to do it sooner and faster!!
     // postRenderDoms.textAreaOfQuiz.value = "";
     // postRenderDoms.textAreaOfAnswer.value = "";
     // postRenderDoms.tagsInput.value = "";
@@ -680,7 +683,7 @@ function resetInputs() {
     document.querySelector(".creation textarea").value = "";
     document.querySelector(".answer textarea").value = "";
     document.querySelector(".input input").value = "";
-    document.querySelector(".date input").value = getTodayDate();
+    // document.querySelector(".date input").value = getTodayDate();
 }
 
 // handle and change UI content based on banners button click
@@ -762,6 +765,13 @@ function addTagsEventListern() {
     }
 }
 
+function addEventListenerOfResetDate() {
+    let button = document.querySelector(".dailyQuizCreation .date button.resetDate");
+    button.addEventListener('click', () => {
+        document.querySelector(".date input").value = getTodayDate();
+        renderTodayTags();
+    })
+}
 
 
 
