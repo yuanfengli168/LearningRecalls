@@ -27,6 +27,23 @@ class MongoDBAtlas {
     }
   }
 
+  // a succeeded function from getAllQuiz(), which will
+  // return the only one quiz by the date and the tag:
+  async getContentAndAnswer(date, tag) {
+    try {
+      let data = await this.getAllQuiz();
+      // data is a object:
+      let content = data[date][tag];
+      let quizContent = content.quizContent;
+      let answerContent = content.quizAnswerContent;
+      
+      return [quizContent, answerContent];
+    } 
+    catch (e) {
+      console.error(e);
+    }
+  }
+
 
   /**
    * Using put method, because the userID is always the same 1001
@@ -158,6 +175,8 @@ class MongoDBAtlas {
       console.error(e);
     }
   }
+
+  // return quiz
 
   transferObjToJSON(obj) {
     return JSON.stringify(obj);
