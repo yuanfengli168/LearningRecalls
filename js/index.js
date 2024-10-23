@@ -126,16 +126,6 @@ function addEventListenerOfTodayTags() {
             let date = getSelectedDate();
             let tag = button.textContent;
 
-            // TODO: might have better algorithm here in future.
-            // if (button.classList.contains("active")) {
-            //     button.classList.remove("active");
-            // } else {
-            //     button.classList.add("active");
-            // }
-
-            // clear all fields by adding reset:
-            // button.classList.add("active");
-
             let prefill = new Prefill(date, tag);
             prefill.prefillQuizAnsAnswer();
         })
@@ -674,16 +664,9 @@ function createObjectOfInputs() {
 
 // clear all inputs of user's input, date will return to today's date.
 function resetInputs() {
-    // TODO: create an class to do it sooner and faster!!
-    // postRenderDoms.textAreaOfQuiz.value = "";
-    // postRenderDoms.textAreaOfAnswer.value = "";
-    // postRenderDoms.tagsInput.value = "";
-    // postRenderDoms.date.value = getTodayDate();
-
     document.querySelector(".creation textarea").value = "";
     document.querySelector(".answer textarea").value = "";
     document.querySelector(".input input").value = "";
-    // document.querySelector(".date input").value = getTodayDate();
 }
 
 // handle and change UI content based on banners button click
@@ -738,15 +721,6 @@ function addSaveButtonEventListener() {
         mongoDbAtlas.saveToDatabase();
     })
 }
-
-
-// // reset all the content of buttons.
-// if (postRenderDoms.resetButton) {
-//     postRenderDoms.resetButton.addEventListener('click', function () {
-//         console.log("reset pressed!!");
-//         resetInputs();
-//     })
-// }
 
 function addEventListenerOfResetButton() {
     document.querySelector("button#reset").addEventListener('click', function () {
