@@ -67,8 +67,10 @@ function renderPage() {
             initialDoms.contents.innerHTML = returnDailyQuizCreation();
             renderAllTags();
             renderTodayTags();
+            addEventListenerOfResetDate();
             addSaveButtonEventListener();
             addTagsEventListern();
+            addEventListenerOfResetButton();
             break;
         case "Quiz History":
             initialDoms.contents.innerHTML = returnQuizHistory();
@@ -95,37 +97,6 @@ async function renderAllTags() {
     parent.innerHTML = span;
 }
 
-
-// async function renderAllTags() {
-//     const spinner = document.getElementById('spinner');
-//     spinner.style.display = 'block';
-
-//     try {
-//             // get the data from backend
-//         const mongoDbAtlas = new MongoDBAtlas();
-//         const tags = await mongoDbAtlas.getAllTags(ROOT_USER_ID);
-
-//         let parent = document.querySelector(".allTags");
-//         let span = '';
-//         if (tags.length <= 0) {
-//             span = '<i>No Tags found</i>';
-//         } else {
-//             for (let tag of tags) {
-//                 span += `<p>${tag}</p>`
-//             }
-//         }
-//         parent.innerHTML = span;
-//     }
-//     catch (e) {
-//         console.error(e);
-//     } 
-//     finally {
-//         spinner.style.display = 'none';
-//     }
-
-    
-// }
-
 async function renderTodayTags() {
     // get the data from backend
     const mongoDbAtlas = new MongoDBAtlas();
@@ -139,10 +110,26 @@ async function renderTodayTags() {
         span = '<i>No Tags found</i>';
     } else {
         for (let tag of tags) {
-            span += `<p>${tag}</p>`
+            // span += `<p>${tag}</p>`
+            span += `<button class="todayTagTabs ${tag}" title="click to prefill">${tag}</button>`
         }
     }
     parent.innerHTML = span;
+    addEventListenerOfTodayTags();
+}
+
+// add event listener of button of tags: 
+function addEventListenerOfTodayTags() {
+    let buttons = document.querySelectorAll(".todayTagTabs");
+    buttons.forEach((button, index) => {
+        button.addEventListener('click', () => {
+            let date = getSelectedDate();
+            let tag = button.textContent;
+
+            let prefill = new Prefill(date, tag);
+            prefill.prefillQuizAnsAnswer();
+        })
+    })
 }
 
 function returnQuizHistory() {
@@ -386,8 +373,10 @@ function returnDailyQuizCreation() {
     return `
         <div class="dailyQuizCreation">
             <div class="date">
-                <h4>Today's Date</h4>
+                <h4>Today's Date</h4> 
+                
                 <input type="date" value=${formattedDate}></input>
+                <button class="resetDate">Reset date</button>
             </div>
             <div class="quizAndAnswer">
                 <div class="creation">
@@ -417,7 +406,7 @@ function returnDailyQuizCreation() {
                         
                     </div>
                     <hr>
-                    <p><b>Selected Date Tags</b></p>
+                    <p><b>Selected Date Tags (click to prefill)</b></p>
                     <div class="todayTags tabs">
                         
                     </div>
@@ -427,7 +416,7 @@ function returnDailyQuizCreation() {
             <div class="buttons">
                 <button id="save">Save Quiz and Answer</button>
                 <button disabled>Append to Same Tag Today</button>
-                <button id="reset">Reset Quiz and Answer</button>
+                <button id="reset">Reset quiz, answer, tag</button>
             </div>
 
         </div>
@@ -675,10 +664,9 @@ function createObjectOfInputs() {
 
 // clear all inputs of user's input, date will return to today's date.
 function resetInputs() {
-    postRenderDoms.textAreaOfQuiz.value = "";
-    postRenderDoms.textAreaOfAnswer.value = "";
-    postRenderDoms.tagsInput.value = "";
-    postRenderDoms.date.value = getTodayDate();
+    document.querySelector(".creation textarea").value = "";
+    document.querySelector(".answer textarea").value = "";
+    document.querySelector(".input input").value = "";
 }
 
 // handle and change UI content based on banners button click
@@ -734,13 +722,13 @@ function addSaveButtonEventListener() {
     })
 }
 
-
-// reset all the content of buttons.
-if (postRenderDoms.resetButton) {
-    postRenderDoms.resetButton.addEventListener('click', function () {
+function addEventListenerOfResetButton() {
+    document.querySelector("button#reset").addEventListener('click', function () {
+        console.log("reset pressed!!");
         resetInputs();
     })
 }
+
 
 function addTagsEventListern() {
     if (document.querySelector('.date input')) {
@@ -751,6 +739,13 @@ function addTagsEventListern() {
     }
 }
 
+function addEventListenerOfResetDate() {
+    let button = document.querySelector(".dailyQuizCreation .date button.resetDate");
+    button.addEventListener('click', () => {
+        document.querySelector(".date input").value = getTodayDate();
+        renderTodayTags();
+    })
+}
 
 
 
