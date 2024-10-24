@@ -39,7 +39,7 @@ function findContent() {
         case "quizHistory":
             resultContentType = contentType.quizHistory;
             break;
-        case "playground":
+        case "newPlayground":
             resultContentType = contentType.playGround;
             break;
     }
@@ -106,6 +106,11 @@ function returnPlayGround() {
 
                     <span class="embed-link">
                         <button class="save-to-gist">Save Embed link here </button>
+                        <input type="text" name="" id="">
+                    </span>
+
+                    <span class="share-link">
+                        <button class="save-to-gist">Save Sharing link here </button>
                         <input type="text" name="" id="">
                     </span>
                     
