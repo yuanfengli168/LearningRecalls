@@ -4,11 +4,18 @@
 
 
 4. (10/10/2024) 
--1）if not full points received, put last wrong no. in front, and change the color of these to red
+-3) Daily fun creation: 
+    - creation page
+    - history page
+    - new database so not mixed with quiz
 
+-3.2) CSS adjusting for Today's Task take quiz so small.
+
+-2) function addSaveButtonEventListener() { and renderTodayTags and renderAllTags() should work when the Savebutton clicked!!
 0) adding favorite/mastered button in the quiz tab && take quiz page.
 
 
+[done] -1）if not full points received, put last wrong no. in front, and change the color of these to red
 a) [done]add a finished today tab; (finished 10/11/2024 in 3.5 hours, but scalable, and reusable, more succinct);
 [Learnings]:
     a)  encapsulation+consice!!! -> each mehtod function do not exceed 30lines of code, excluding comments. 

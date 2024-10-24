@@ -1,0 +1,69 @@
+@import "common.css";
+@import "video.css";
+
+div.playgroundContainer {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top:90px;
+    background-color: rgb(169, 169, 169);
+    height: calc(100vh - 120px);
+    width: 99vw;
+    margin: 0 auto;
+}
+
+div.playgroundContainer .sub-header {
+    height: 25px;
+    position: relative;
+}
+
+div.playgroundContainer .sub-header p {
+    float: left;
+    margin: 0;
+}
+
+/* div.playgroundContainer .sub-header .buttons {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    margin: auto 0;
+} */
+
+div.playgroundContainer .sub-header .buttons {
+    float: left;
+    margin-left: 40px;
+    line-height: 1em;
+    
+}
+
+div.playgroundContainer .sub-header .buttons span {
+    text-align: center;
+    margin: 0 32px;
+    background-clip: border-box;
+}
+
+div.playgroundContainer .sub-header .buttons span.github-link {
+    background-color: beige;
+}
+
+div.playgroundContainer .sub-header .buttons span.embed-link {
+    margin-left: 20px;
+    background-color: orange;
+}
+
+div.playgroundContainer .sub-header .buttons input {
+    width: 300px;
+}
+
+div.playgroundContainer .sub-header .buttons button {
+    line-height: 100%;
+    margin-right: 20px;
+
+}
+
+div.playgroundContainer iframe {
+    width: 100%;
+    height: 100%;
+}
+
