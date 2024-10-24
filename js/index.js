@@ -5,6 +5,7 @@ const contentType = Object.freeze({
     todayTask: "Today Task",
     dailyQuizCreation: "Daily Quiz Creation",
     quizHistory: "Quiz History",
+    playGround: "Play Ground",
 })
 
 const initialDoms = {
@@ -37,6 +38,9 @@ function findContent() {
             break;
         case "quizHistory":
             resultContentType = contentType.quizHistory;
+            break;
+        case "playground":
+            resultContentType = contentType.playGround;
             break;
     }
 
@@ -77,8 +81,45 @@ function renderPage() {
             filters.renderFilters(filters.tag, filters.order, "history");
             showPreviousQuizs(true, filters.tag, filters.order);
             break;
+        case "Play Ground": 
+            console.log("PlayGround!!!")
+            initialDoms.contents.innerHTML = returnPlayGround();
+            break;
     }
 }
+
+function returnPlayGround() {
+    // return html: 
+    const strOfhtml = `
+        <div class="playgroundContainer">
+            <div class="sub-header clearfix">
+                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Reprehenderit, sapiente.</p>
+
+                <div class="buttons">
+                    <a href="./sketchHTML/video.html" target="_blank"><button class="video">Open video</button></a>
+                    
+                    <span class="github-link">
+                        <button class="save-to-gist">Save Github link here</button>
+                        <input type="text" name="" id="">
+                    </span>
+
+
+                    <span class="embed-link">
+                        <button class="save-to-gist">Save Embed link here </button>
+                        <input type="text" name="" id="">
+                    </span>
+                    
+                    
+                </div>
+            </div>
+            <iframe class="codepen" src="https://codepen.io/pen/" frameborder="0"></iframe>
+        </div>
+
+    `
+    return strOfhtml;
+}
+
+
 
 async function renderAllTags() {
     // get the data from backend
@@ -151,9 +192,9 @@ function needsReview(quiz) {
 
     const diffDays = (new Date(todayDate).getTime() - new Date(quizDate).getTime()) / (1000 * 3600 * 24);
 
-    if ((quiz.results.length === 0 && diffDays !== 0) || 
-        [1,7,14,28,56].includes(diffDays) && Array.from(quiz.results).at(-1).finishedDateTime.split(" ")[0] !== todayDate) {
-            return true;    
+    if ((quiz.results.length === 0 && diffDays !== 0) ||
+        [1, 7, 14, 28, 56].includes(diffDays) && Array.from(quiz.results).at(-1).finishedDateTime.split(" ")[0] !== todayDate) {
+        return true;
     }
     else return false;
 }
@@ -179,17 +220,17 @@ async function showPreviousQuizs(showAll, tagValue, orderValue) {
 
         // get all quiz that has not been finished.
         // get quiz that is 7 days ago, or one month ago, or two month ago
-        
+
         if (tagValue && tagValue !== "") {
             previousQuizArray = previousQuizArray.filter(quiz => quiz.tag === tagValue);
             changed = true;
         }
-        
+
         // bug1, please see the typeof case, I was struggling because 2 !== "2"; type is different.
         // bug2, the order must all have new in front of the Date(), new was missing
         if (orderValue && orderValue > 1) {
 
-            switch(parseInt(orderValue)) {
+            switch (parseInt(orderValue)) {
                 // non-chronological:
                 case 2:
                     previousQuizArray.sort((a, b) => new Date(b.date) - new Date(a.date));
@@ -200,20 +241,20 @@ async function showPreviousQuizs(showAll, tagValue, orderValue) {
                     previousQuizArray.sort((a, b) => new Date(a.date) - new Date(b.date));
                     // console.log("previousQuizArray: ", previousQuizArray);
                     break;
-                default: 
+                default:
                     // console.log("the order value is not valid");
                     break;
             }
             changed = true;
         }
-        
+
         if (showAll === false) {
             // previousQuizArray = previousQuizArray.filter(quiz => quiz.results.length === 0);
             previousQuizArray = previousQuizArray.filter(quiz => needsReview(quiz));
             // console.log("!showAll");
-        } 
+        }
         if (showAll === true && changed === false) {
-            previousQuizArray.sort((a, b) => new Date(b.date) -  new Date(a.date));
+            previousQuizArray.sort((a, b) => new Date(b.date) - new Date(a.date));
             // console.log("showAll");
         }
 
@@ -317,7 +358,7 @@ function renderLogsOfIndex(idx, previousQuizArray, isHidden, parent) {
     if (!parent) {
         parent = document.querySelector(`.card-logs-${idx}`);
     }
-    
+
     parent.innerHTML = element;
 
 
@@ -719,6 +760,13 @@ function addSaveButtonEventListener() {
 
         const mongoDbAtlas = new MongoDBAtlas(dataBaseObj);
         mongoDbAtlas.saveToDatabase();
+
+        // TODO: 
+        // not waiting for the saveTODatabase finish 
+        // because can't add await before the above line
+        // quickfix: add setTimeOut
+        // renderTodayTags();
+        setTimeout(() => renderTodayTags(), 1000);
     })
 }
 
