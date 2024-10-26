@@ -126,6 +126,8 @@ div .tags {
     display: flex;
     justify-content: wrap;
     align-items: left;
+    /* width: 65vw; */
+    /* overflow-x: auto; */
 
     .input {
         width: 16vw;
@@ -134,7 +136,6 @@ div .tags {
 
     .history .tabs {
         width: 65vw;
-
         padding: 0;
         margin: 0;
         font-size: 14px;
@@ -143,8 +144,11 @@ div .tags {
         justify-content: start;
         /* overflow: scroll; */
         overflow-x: auto;
+        overflow-y: hidden;
 
         p {
+            height: 14px;
+            width: 100px;
             margin-right: 8px;
             border: 1px solid;
             border-radius: 5px;

@@ -1,3 +1,5 @@
+// import PlayGroundCreationPage from "./components/playGroundCreationPage.js";
+
 const ROOT_USER_ID = 1001;
 var dataArray = [];
 
@@ -6,6 +8,7 @@ const contentType = Object.freeze({
     dailyQuizCreation: "Daily Quiz Creation",
     quizHistory: "Quiz History",
     playGround: "Play Ground",
+    createPlayGround: "Create Play Ground",
 })
 
 const initialDoms = {
@@ -41,6 +44,9 @@ function findContent() {
             break;
         case "newPlayground":
             resultContentType = contentType.playGround;
+            break;
+        case "createPlayground": 
+            resultContentType = contentType.createPlayGround;
             break;
     }
 
@@ -82,9 +88,16 @@ function renderPage() {
             showPreviousQuizs(true, filters.tag, filters.order);
             break;
         case "Play Ground": 
-            console.log("PlayGround!!!")
             initialDoms.contents.innerHTML = returnPlayGround();
             break;
+        case "Create Play Ground":
+            console.log("Create!!!")
+            const pgcp = new PlayGroundCreationPage(5);
+            let innerHTML = pgcp.buildSkeleton("playGroundCreation");
+            console.log(innerHTML);
+            initialDoms.contents.innerHTML = innerHTML;
+            break;
+            
     }
 }
 
@@ -98,14 +111,9 @@ function returnPlayGround() {
                 <div class="buttons">
                     <a href="./sketchHTML/video.html" target="_blank"><button class="video">Open video</button></a>
                     
+                    
                     <span class="github-link">
                         <button class="save-to-gist">Save Github link here</button>
-                        <input type="text" name="" id="">
-                    </span>
-
-
-                    <span class="embed-link">
-                        <button class="save-to-gist">Save Embed link here </button>
                         <input type="text" name="" id="">
                     </span>
 
