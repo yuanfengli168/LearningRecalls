@@ -7,7 +7,7 @@ Figma UI doc: https://www.figma.com/design/NdSqaZV0ZHHL3NxXy5vjDd/Figma-practice
 
 Excalidraw Design docs for version 1: 
 - (before Oct 25 2024)https://excalidraw.com/#json=a5yZjqekdjg57tjaXhJsr,l0l89lp5aJWbQG4rmd7ttQ
-- (before ...) https://excalidraw.com/#json=0NamYcg7rHP9dm2gB8BTj,s6eIBh7L8OtP6lCoXt9fqg
+- (before ...) https://excalidraw.com/#json=kCgRI_KTtSAkntpPoYbQY,FsnC75wAOh75DW4R0U5ODg
 
 
 ## insert some fake data: 

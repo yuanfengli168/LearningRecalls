@@ -45,7 +45,7 @@ function findContent() {
         case "newPlayground":
             resultContentType = contentType.playGround;
             break;
-        case "createPlayground": 
+        case "createPlayground":
             resultContentType = contentType.createPlayGround;
             break;
     }
@@ -58,7 +58,6 @@ function findContent() {
 
 function renderPage() {
     var contentType = findContent();
-    var contentHTML = null;
 
     switch (contentType) {
         // case contentType.todayTask: 
@@ -87,17 +86,18 @@ function renderPage() {
             filters.renderFilters(filters.tag, filters.order, "history");
             showPreviousQuizs(true, filters.tag, filters.order);
             break;
-        case "Play Ground": 
+        case "Play Ground":
             initialDoms.contents.innerHTML = returnPlayGround();
             break;
         case "Create Play Ground":
-            console.log("Create!!!")
-            const pgcp = new PlayGroundCreationPage(5);
-            let innerHTML = pgcp.buildSkeleton("playGroundCreation");
-            console.log(innerHTML);
+            const pgcp = new PlayGroundCreationPage();
+            let innerHTML = pgcp.buildWholePage({
+                dateIndex: 1, titleIndex: 2,
+                descIndex: 3, videoIndex: 4, buttonIndex: 5
+            });
             initialDoms.contents.innerHTML = innerHTML;
             break;
-            
+
     }
 }
 
