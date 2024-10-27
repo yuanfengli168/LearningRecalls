@@ -154,6 +154,7 @@ div .tags {
             border-radius: 5px;
             padding: 4px;
             background-color: rgb(217, 217, 217);
+            word-break: keep-all;
         }
         
     }

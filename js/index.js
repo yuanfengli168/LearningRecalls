@@ -96,6 +96,7 @@ function renderPage() {
                 descIndex: 3, videoIndex: 4, buttonIndex: 5
             });
             initialDoms.contents.innerHTML = innerHTML;
+            pgcp.addEventListeners();
             break;
 
     }
@@ -513,11 +514,11 @@ function getCurrentTime() {
     return `${hours}:${minutes}:${seconds}`;
 }
 
-function getCurrentDateAndTime() {
+function getCurrentDateAndTime(connector = " ") {
     let date = getTodayDate();
     let time = getCurrentTime();
 
-    return date + " " + time;
+    return date + connector + time;
 }
 
 function renderQuizOfIndex(index, previousQuizArray) {

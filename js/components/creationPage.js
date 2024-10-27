@@ -22,7 +22,7 @@ class CreationPage extends CreationPageInterface {
             let content = this.array[i] === null ? "" : this.array[i];
 
             let section = `
-                <div class=section-${i}>
+                <div class="section ${i}">
                     ${content}
                 </div>
             `

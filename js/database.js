@@ -204,7 +204,38 @@ class MongoDBAtlas {
 
   }
 
-  // return quiz
+  // // upload video to backend: 
+  // async uploadVideo(dataObj) {
+  //   try {
+  //     let metaData = {
+  //       date: dataObj.date,
+  //       title: dataObj.title,
+  //       desc: dataObj.desc,
+  //       htmlPath: dataObj.videoHTMLPagePath,
+  //     }
+  //     // TODO later: 
+  //     // await saveVideoMetaData(metaData);
+  //     console.log("dataObj: ", dataObj);
+
+  //     const response = await fetch('http://localhost:5001/api/uploadVideo', {
+  //       method: "POST",
+  //       body: JSON.stringify(dataObj),
+  //     })
+
+  //     if (response.ok) {
+  //       console.log("File uploaded successfully!!!");
+  //       return true;
+  //     } else {
+  //       console.error("File upload failed");
+  //       return false;
+  //     }
+  //   }
+  //   catch (e) {
+  //     console.error(e);
+  //   }
+    
+    
+  // }
 
   transferObjToJSON(obj) {
     return JSON.stringify(obj);

@@ -1,0 +1,8 @@
+.contents .skeleton .section {
+    margin: 32px 0;
+}
+
+.contents .skeleton .section .buttons{
+    display: flex;
+    justify-content: space-between;
+}
