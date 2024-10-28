@@ -51,8 +51,8 @@ class PlayGroundCreationPage extends CreationPage {
 
      buildVideoUploadComponent(indexOnPage) {
         let uploadComponent = `
-            <form id="uploadForm">
-                <input type="file" id="videoFile" accept="video/mp4" required>
+            <form id="uploadForm" accept-charset="UTF-8">
+                <input type="file" id="videoFile" accept="video/mp4" accept-charset="UTF-8" required>
                 <button type="button">Upload</button>
             </form>
         `
@@ -99,6 +99,7 @@ class PlayGroundCreationPage extends CreationPage {
             const fileInput = document.getElementById('videoFile');
             const formData = new FormData();
             formData.append('video', fileInput.files[0]);
+            console.log("FormData: ", formData);
 
             try {
                 const response = await fetch('http://localhost:5001/upload', {

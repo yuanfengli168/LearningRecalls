@@ -5,6 +5,7 @@ const { MongoClient } = require('mongodb');
 const dotenv = require('dotenv');
 const multer = require('multer');
 const fs = require('fs');
+const sanitize = require('sanitize-filename'); 
 
 dotenv.config(); // Load environment variables from .env file
 
@@ -393,12 +394,27 @@ app.get('/api/contents-and-answers', async(req, res) => {
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     // cb(null, path.join("/assets/", 'video'));
-    cb(null, path.join(__dirname, 'video'));
+    cb(null, path.join(__dirname, '/assets/video/'));
 
   },
+  // // the following worked for english name, but no chinese:
+  // filename: (req, file, cb) => {
+  //   cb(null, file.originalname);
+  // },
   filename: (req, file, cb) => {
-    cb(null, file.originalname);
-  },
+    // Use the original filename, ensuring UTF-8 compatibility: 
+    file.originalname = Buffer.from(file.originalname, 'latin1').toString('utf-8');
+    // const utf8SafeName = Buffer.from(file.originalname, 'utf-8').toString();
+    // cb(null, utf8SafeName);
+    // console.log("utf8safeName: ", utf8SafeName);
+
+
+    // const utf8SafeName2 = sanitize(file.originalname);
+    // console.log("utf2: ", utf8SafeName2);
+    // cb(null, utf8SafeName2);
+    console.log("file original name: ", file.originalname);
+     cb(null, file.originalname);
+  }
 });
 const upload = multer({ storage });
 
@@ -408,6 +424,8 @@ const upload = multer({ storage });
 // Route to handle video uploads
 app.post('/upload', upload.single('video'), (req, res) => {
   if (req.file) {
+    console.log("fileName: ", req.file);
+    console.log("req.body: ", req.body);
     res.status(200).send('File uploaded successfully');
   } else {
     res.status(400).send('Failed to upload file');
