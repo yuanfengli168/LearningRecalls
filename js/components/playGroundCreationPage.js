@@ -23,32 +23,6 @@ class PlayGroundCreationPage extends CreationPage {
         return titleComponent;
     }
 
-    // // build and put the video upload into the related index of section on page
-    // buildVideoUploadComponent(indexOnPage) {
-    //     let uploadComponent = `
-    //         <div class="video-upload">
-    //             <p>Please upload video here: </p>
-    //             <input type="file" accept=".mp4" name="video">
-    //             <p>Only accept .mp4 type</p>
-    //         </div>
-    //     `
-    //     this.array[indexOnPage] = uploadComponent;
-    //     return uploadComponent;
-    // }
-    // build and put the video upload into the related index of section on page
-    
-    // buildVideoUploadComponent(indexOnPage) {
-    //     let uploadComponent = `
-    //         <form action="/upload" method="POST" enctype="multipart/form-data">
-    //             <input type="file" name="videoFile" accept=".mp4" required>
-    //             <button type="submit">Upload Video</button>
-    //         </form>
-    //     `
-    //     this.array[indexOnPage] = uploadComponent;
-    //     return uploadComponent;
-    // }
-
-
      buildVideoUploadComponent(indexOnPage) {
         let uploadComponent = `
             <form id="uploadForm" accept-charset="UTF-8">
@@ -56,9 +30,6 @@ class PlayGroundCreationPage extends CreationPage {
                 <button type="button">Upload</button>
             </form>
         `
-
-        // let button = document.querySelector("form#uploadForm button");
-        // console.log("button: ", button);
 
         this.array[indexOnPage] = uploadComponent;
         return uploadComponent;
@@ -91,10 +62,9 @@ class PlayGroundCreationPage extends CreationPage {
         const eventL = new EventListeners();
         eventL.addEventListenerOfPlayground();
 
-
+        // TODO: encapsul it!!
         // test for uploadVideo: 
         let button = document.querySelector("form#uploadForm button");
-        console.log("Button: ", button);
         button.addEventListener('click', async () => {
             const fileInput = document.getElementById('videoFile');
             const formData = new FormData();

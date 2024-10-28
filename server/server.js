@@ -320,106 +320,18 @@ app.get('/api/contents-and-answers', async(req, res) => {
   }
 })
 
-// // All failed let's do it again
-// // Set up storage for uploaded files: 
-// const storage = multer.diskStorage({
-//   destination: (req, file, cb) => {
-//     // const uploadDir = path.join(__dirname, req.body.videoHTMLPagePath)
-//     const uploadDir = path.join(null, "/assets/video/");
-
-//     if (!fs.existsSync(uploadDir)) {
-//       fs.mkdirSync(uploadDir, { recursive: true }); // the directory should already available.
-//     }
-    
-//     cb(null, uploadDir);
-//   },
-//   filename: (req, file, cb) => {
-//     // cb(null, req.body.video.name); 
-//     cb(null, Date.now() + '-' + file.originalname);
-//   }
-// })
-
-// const upload = multer({ storage });
-
-// // upload video and its html page to the path received: 
-// // app.post('/api/uploadVideo', upload.single('video'), async(req, res) => {
-// app.post('/api/uploadVideo', async(req, res) => {
-//   try {
-//     console.log("uploadVideo: ", req.body);
-//     res.json(true);
-//   }
-//   catch (e) {
-//     console.error(e);
-//     res.json(false);
-//   }
-// })
-
-// // Define the destination folder for video uploads
-// const storage = multer.diskStorage({
-//     destination: (req, file, cb) => {
-//         cb(null, 'video'); // Specify 'video' folder as the destination
-//     },
-//     filename: (req, file, cb) => {
-//         // Customize the file name to avoid overwriting
-//         cb(null, Date.now() + path.extname(file.originalname)); // Append timestamp to original file name
-//     }
-// });
-
-// // Set up Multer with storage and file filter to restrict file type
-// const upload = multer({
-//     storage: storage,
-//     fileFilter: (req, file, cb) => {
-//         const filetypes = /mp4/;
-//         const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-//         const mimetype = filetypes.test(file.mimetype);
-
-//         if (mimetype && extname) {
-//             return cb(null, true);
-//         } else {
-//             cb(new Error('Only .mp4 files are allowed!'));
-//         }
-//     }
-// });
-
-// // Define the route for handling video uploads
-// app.post('/upload', upload.single('videoFile'), (req, res) => {
-//     try {
-//         res.send('Video uploaded successfully!');
-//     } catch (error) {
-//         res.status(400).send('Error uploading video');
-//     }
-// });
-
 // Set up multer for file uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    // cb(null, path.join("/assets/", 'video'));
     cb(null, path.join(__dirname, '/assets/video/'));
-
   },
-  // // the following worked for english name, but no chinese:
-  // filename: (req, file, cb) => {
-  //   cb(null, file.originalname);
-  // },
   filename: (req, file, cb) => {
     // Use the original filename, ensuring UTF-8 compatibility: 
     file.originalname = Buffer.from(file.originalname, 'latin1').toString('utf-8');
-    // const utf8SafeName = Buffer.from(file.originalname, 'utf-8').toString();
-    // cb(null, utf8SafeName);
-    // console.log("utf8safeName: ", utf8SafeName);
-
-
-    // const utf8SafeName2 = sanitize(file.originalname);
-    // console.log("utf2: ", utf8SafeName2);
-    // cb(null, utf8SafeName2);
-    console.log("file original name: ", file.originalname);
      cb(null, file.originalname);
   }
 });
 const upload = multer({ storage });
-
-// Serve static files from the client folder
-// app.use(express.static(path.join(__dirname, 'client')));
 
 // Route to handle video uploads
 app.post('/upload', upload.single('video'), (req, res) => {
