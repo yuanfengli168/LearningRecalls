@@ -12,11 +12,13 @@ dotenv.config(); // Load environment variables from .env file
 const app = express();
 const PORT = process.env.PORT || 5001;
 
+// ===================================================================================================
 // Middleware
 app.use(express.json()); // Parse JSON data
 app.use(cors()); // enable CORS for all routes and origins
 
 
+// ===================================================================================================
 // DATABASE:
 const DB_NAME = "learningRecalls";
 const COLLECTION_NAME = "allData";
@@ -56,35 +58,6 @@ class DBClient {
     return await collection.findOne({userID: userID});
   }
 
-  // // return a document, including dates.
-  // // return a Promise!
-  // async getDocument(userID) {
-  //   console.log("this.collection: ", this.collection);
-  //   return await this.findUserIDInCol(userID, this.collection);
-  // }
-
-  // // // 提前优化是灾难的开始：这里两行多了点但是正确，改成一行浪费30min
-  // // return a document, including dates.
-  // // return a Promise!
-  // // async getDocument(userID, dbName, collectionName) {
-  // //   if (dbName === this.defaultDBName && collectionName === this.defaultCollectionName) {
-  // //     return await this.findUserIDInCol(userID, this.collection);
-  // //   }
-
-  // //   let colleciton = this.getCollection(dbName, collectionName);
-  // //   return await findUserIDInCol(userID, colleciton);
-  // // }
-
-  // async getObjectOfDates(userID) {
-  //   const document = await this.getDocument(userID);
-  //   return document.dates; // hard coded by this app.
-  // }
-
-  // getObjectOfTags(userID, date) {
-  //   const objectOfDates = this.getObjectOfDates(userID);
-  //   return objectOfDates[date];
-  // }
-
   /**
   * Return the collection object from mongoClient
   * @param {string, string} collection, database
@@ -119,7 +92,7 @@ async function connectToDatabase() {
 connectToDatabase();
 
 
-
+// ================================================================================================
 // ROUTES:
 app.get('/', (req, res) => {
   res.send('Hello from the Node.js backend!');
@@ -347,6 +320,7 @@ app.post('/upload', upload.single('video'), (req, res) => {
 
 
 /*
+===================================================================================================
 Helper Functions below!
 */
 // return a key of array
