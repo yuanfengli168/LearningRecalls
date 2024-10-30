@@ -35,6 +35,20 @@ let mockPlayGroundHistory = [
                 score: '9 (number cant transit smooth)', 
                 githubLink: "https://gist.github.com/yuanfengli168/be0fb0cc38c5ae7666094c20804bcd2a",
                 codepenLink: "https://codepen.io/yuanfengli168/pen/GRVOQyV"
+            },
+            {
+                date: '2024-10-30',
+                time: '13:40:50',
+                score: '9 (number cant transit smooth)', 
+                githubLink: "https://gist.github.com/yuanfengli168/be0fb0cc38c5ae7666094c20804bcd2a",
+                codepenLink: "https://codepen.io/yuanfengli168/pen/GRVOQyV"
+            },
+            {
+                date: '2024-10-30',
+                time: '13:40:50',
+                score: '9 (number cant transit smooth)', 
+                githubLink: "https://gist.github.com/yuanfengli168/be0fb0cc38c5ae7666094c20804bcd2a",
+                codepenLink: "https://codepen.io/yuanfengli168/pen/GRVOQyV"
             }
         ]
     }

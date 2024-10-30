@@ -195,7 +195,7 @@ div .dailyQuizCreation .buttons {
 .quiz-cards {
     background-color: lightgray;
     border-radius: 5px;
-    width: 85%;
+    /* width: 85%; */
     height: 80px;
     overflow: hidden;
     display: flex;
@@ -253,7 +253,8 @@ div .quiz-item {
 
 .quiz {
     padding-left: 8px;
-    overflow-y: scroll;
+    padding-right: 8px;
+    overflow-y: auto;
     margin: 16px 0;
 }
 

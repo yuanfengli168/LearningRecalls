@@ -76,10 +76,28 @@ class PlayGroundHistoryPage extends CreationPage {
                 childElement.innerHTML = logsHTML;
                 parent.appendChild(childElement);
 
+                this.addEventListenerOfContinueWork(index, parent);
+
                 button.classList.add("active");
             }
-
         }))
+    }
+
+    addEventListenerOfContinueWork(parentIndex, parent) {
+        const childElements = parent.querySelectorAll("div.logs div.log-item button.codepen");
+        childElements.forEach((button, index) => {
+            button.addEventListener("click", () => {
+                // console.log(button, index);
+                let contents = document.querySelector(".contents");
+                contents.innerHTML = '';
+                
+                let videoPath = this.arrayOfObj[parentIndex].videoPath;
+                let pG = returnPlayGround(videoPath);
+                contents.innerHTML = pG;
+
+                this.addEventListenerOfReturn();
+            })            
+        })
     }
 
     // add event listener for return: 
@@ -92,7 +110,11 @@ class PlayGroundHistoryPage extends CreationPage {
             
             let pG = this.buildWholePage({historyIdx: 2});
             contents.innerHTML = pG;
+
+            this.addEventListeners();
         })
+
+        
     }
 
     // create the log part for the divs.
@@ -116,11 +138,13 @@ class PlayGroundHistoryPage extends CreationPage {
         if (!obj) {
             return "Data missing";
         }
-
+        // <a src=${obj.githubLink} target="_blank">See code on GitHub Gists</a>
         let logsHTML = `
             <div class="log-item">
-                <span>date: ${obj.date}, time: ${obj.time}</span>
-                <button class="github-gists">See code on GitHub Gists</button>
+                <p>date: ${obj.date}, time: ${obj.time}, score: ${obj.score}</p>
+                <button class="github-gists" onclick="window.open('${obj.githubLink}', '_blank')">
+                    See Code in GitHub Gists
+                </button>
                 <button class="codepen">Continue work on CodePen</button>
             </div>
         `
