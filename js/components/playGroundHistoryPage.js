@@ -85,14 +85,17 @@ class PlayGroundHistoryPage extends CreationPage {
 
     addEventListenerOfContinueWork(parentIndex, parent) {
         const childElements = parent.querySelectorAll("div.logs div.log-item button.codepen");
+        let videoPath = this.arrayOfObj[parentIndex].videoPath;
+        let logs = this.arrayOfObj[parentIndex].logs;
+        let contents = document.querySelector(".contents");
+
         childElements.forEach((button, index) => {
             button.addEventListener("click", () => {
-                // console.log(button, index);
-                let contents = document.querySelector(".contents");
-                contents.innerHTML = '';
+                let codePenPath = logs[index].codepenLink;
+                console.log("codePenPath: ", codePenPath);
                 
-                let videoPath = this.arrayOfObj[parentIndex].videoPath;
-                let pG = returnPlayGround(videoPath);
+                contents.innerHTML = '';
+                let pG = returnPlayGround(videoPath, codePenPath);
                 contents.innerHTML = pG;
 
                 this.addEventListenerOfReturn();

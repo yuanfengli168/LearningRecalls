@@ -111,7 +111,8 @@ function renderPage() {
     }
 }
 
-function returnPlayGround(htmlPath) {
+// 
+function returnPlayGround(videoPath, codePenPath = "https://codepen.io/pen/") {
     // return html: 
     const strOfhtml = `
         <div class="playgroundContainer">
@@ -119,7 +120,7 @@ function returnPlayGround(htmlPath) {
                 <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Reprehenderit, sapiente.</p>
 
                 <div class="buttons">
-                    <a href="${htmlPath}" target="_blank"><button class="video">Open video</button></a>
+                    <a href="${videoPath}" target="_blank"><button class="video">Open video</button></a>
                     
                     
                     <span class="github-link">
@@ -137,7 +138,7 @@ function returnPlayGround(htmlPath) {
                     
                 </div>
             </div>
-            <iframe class="codepen" src="https://codepen.io/pen/" frameborder="0"></iframe>
+            <iframe class="codepen" src=${codePenPath} frameborder="0"></iframe>
         </div>
 
     `
