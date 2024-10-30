@@ -51,5 +51,20 @@ let mockPlayGroundHistory = [
                 codepenLink: "https://codepen.io/yuanfengli168/pen/GRVOQyV"
             }
         ]
+    },
+    {
+        date: "交错排列的文字test",
+        title: "交错排列的文字",
+        desc: "交错排列的文字",
+        videoPath: '/server/assets/html/2024-10-30-15:40:38交错排列的文字 - 小红书.mp4.html',
+        logs: [
+            {
+                date: '2024-10-31',
+                time: '',
+                score: '', 
+                githubLink: "https://gist.github.com/yuanfengli168/52ab52bb991a6c539b3c6a515ad7b198",
+                codepenLink: "https://codepen.io/yuanfengli168/pen/PoMemMx"
+            },
+        ]
     }
 ]
