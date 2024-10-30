@@ -6,3 +6,7 @@
     display: flex;
     justify-content: space-between;
 }
+
+.contents .quiz .playground-item .playground-cards button.logs.active {
+    background-color: darkgray;
+}
