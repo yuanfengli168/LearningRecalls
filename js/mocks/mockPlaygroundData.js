@@ -21,6 +21,6 @@ let mockPlayGroundHistory = [
         date: "test",
         title: "test",
         desc: "test",
-        videoPath: "/assets/html/2024-10-29-22:52:15open.mp4.html"
+        videoPath: "/server/assets/html/2024-10-29-23:31:58open.mp4.html"
     }
 ]

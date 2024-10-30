@@ -241,7 +241,7 @@ class EventListeners {
     createVideoPath(file) {
         if (!file) return null;
 
-        let destinationFolderPath = "/assets/video/"
+        let destinationFolderPath = "/server/assets/video/"
         let fileName = file.name;
         
         return destinationFolderPath + fileName;
@@ -256,6 +256,20 @@ class EventListeners {
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>sketch video</title>
             <link rel="stylesheet" href="./../css/video.css">
+            <style>
+                body {
+                    background-color: grey;
+                }
+
+                .video-container {
+                    text-align: center;
+                }
+                video {
+                    height: 80vh;
+                    width: fit-content;
+                    margin: 10vh 0;
+                }
+            </style>
         </head>
         <body>
             
@@ -274,7 +288,7 @@ class EventListeners {
     createVideoHTMLPagePath(file) {
         if (!file) return null;
 
-        let destFolder = "/assets/HTMLs/"
+        let destFolder = "/server/assets/html/"
         let time = getCurrentDateAndTime("-")
         let name = file.name;
         let suffix = ".html";
@@ -320,13 +334,20 @@ class EventListeners {
     }
 
     // return the actions in db side for each creation page.
-    takeActionsInDB(db, data) {
+    async takeActionsInDB(db, data) {
         switch (this.currentPage) {
             case "Create Play Ground": 
-                let suc1 = db.uploadVideo(video);
+                let formData = new FormData();
+                formData.append('video', data.video);
+                let suc1 = await db.uploadVideo(formData);
                 console.log("UPLOAD VIDEO: ", suc1);
                 
-                let suc2 = db.uploadVideoMetaDataToDB(data);
+                const dataObj = {
+                    videoHTML: data.videoHTML,
+                    videoHTMLPagePath: data.videoHTMLPagePath,
+                }
+                console.log("dataObj: ", dataObj)
+                let suc2 = await db.uploadVideoHTML(dataObj);
                 return suc1 && suc2;
         }
     }

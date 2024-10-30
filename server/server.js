@@ -329,7 +329,8 @@ app.post('/uploadVideoMetaData', (req, res) => {
   const videoHTML = data.videoHTML;
   const videoHTMLPagePath = data.videoHTMLPagePath;
   console.log("htmlName type: ", typeof videoHTML);
-  const filePath = path.join(__dirname, videoHTMLPagePath);
+  // due to a little diff from server, deleting /server in str front
+  const filePath = path.join(__dirname, videoHTMLPagePath.slice(7));
   console.log("Video file Path: ", filePath);
 
   fs.writeFile(filePath, videoHTML, (err) => {
