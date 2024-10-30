@@ -11,7 +11,16 @@
     background-color: darkgray;
 }
 
+.contents .quiz .playground-item div.logs {
+    padding-top: 8px;
+    background-color: lightcyan;
+}
+
 .contents .quiz .playground-item div.logs div.log-item {
     margin: 8px 0;
-    background-color: antiquewhite;
+    background-color: lightgray;
+}
+
+.contents .quiz .playground-item div.logs div.log-item:first-child {
+    margin: 0;
 }

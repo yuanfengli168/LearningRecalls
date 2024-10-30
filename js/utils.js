@@ -73,7 +73,7 @@ function createPlayGroundCard(pg, i) {
                 <h3>Date: ${date}, Title: ${title}</h3>
                 <pre>${desc}</pre>
             </div>
-            <button class="take">Play</button>
+            <button class="take">Play again</button>
             <button class="logs">Logs v</button>
                             
         </div>
