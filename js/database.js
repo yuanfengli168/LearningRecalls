@@ -238,12 +238,12 @@ class MongoDBAtlas {
       }
   }
 
-  // upload date, video title, video description and video file path to back end, 
-  async uploadVideoMetaDataToDB(data) {
-    try {
-      // TODOs.
-    }
-  }
+  // // upload date, video title, video description and video file path to back end, 
+  // async uploadVideoMetaDataToDB(data) {
+  //   try {
+  //     // TODOs.
+  //   }
+  // }
 
   transferObjToJSON(obj) {
     return JSON.stringify(obj);

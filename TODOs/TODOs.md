@@ -67,4 +67,5 @@ e) fix the toggle functions, with the help of chatGPT: (https://chatgpt.com/shar
 #### By dates: 
 ##### 10292024: 
 - 1. one commit to change the frequency of quiz from 6 to 3 only undo, 7 days, 30 days.
-- 2. 
+- 2. the page for form still reloads the page (spend over 2 hours but not solved, need to be patient)
+- 

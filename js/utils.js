@@ -24,7 +24,7 @@ function createQuizCard(quiz, i) {
     let date, tag, numbers, quizContent;
     date = quiz.date ?? "unfound";
     quizContent = quiz.content ?? "unfound";
-    tag = quiz.tag;
+    tag = quiz.tag ?? "unfound";
     numbers = getNumbersOfQuestions(quizContent);
 
     
@@ -56,5 +56,43 @@ function createQuizCards(quizs) {
         quizCards += quizCard;
     }
     return quizCards;
+}
+
+
+// create quizCard in html format: 
+function createPlayGroundCard(pg, i) {
+    let date, title, desc;
+    date = pg.date ?? "unfound";
+    title = pg.title ?? "unfound";
+    desc = pg.desc ?? "unfound";
+
+    const card = `
+    <div class="quiz-item playground-item">
+        <div class="quiz-cards playground-cards ${i}">
+            <div class="card-content">
+                <h3>Date: ${date}, Title: ${title}</h3>
+                <pre>${desc}</pre>
+            </div>
+            <button class="take">Play</button>
+            <button class="logs">Logs v</button>
+                            
+        </div>
+        <div class="card-logs-${i}">
+
+        </div>
+    </div>
+    `
+    return card;
+}
+
+// create quizCards in html format: 
+function createPlayGroundCards(arrayOfPGs) {
+    let cards = ``;
+    for (let i = 0; i < arrayOfPGs.length; i++) {
+        let card = createPlayGroundCard(arrayOfPGs[i], i);
+        cards += card;
+    }
+    
+    return '<div class="quiz" style="background: #008c8c">' + cards + '</div>';
 }
 

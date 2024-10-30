@@ -9,6 +9,7 @@ const contentType = Object.freeze({
     quizHistory: "Quiz History",
     playGround: "Play Ground",
     createPlayGround: "Create Play Ground",
+    playGroundHistory: "Play Ground History",
 })
 
 const initialDoms = {
@@ -47,6 +48,9 @@ function findContent() {
             break;
         case "createPlayground":
             resultContentType = contentType.createPlayGround;
+            break;
+        case "playgroundHistory":
+            resultContentType = contentType.playGroundHistory;
             break;
     }
 
@@ -98,6 +102,11 @@ function renderPage() {
             initialDoms.contents.innerHTML = innerHTML;
             pgcp.addEventListeners();
             break;
+        case "Play Ground History": 
+            const pghp = new PlayGroundHistoryPage(4);
+            initialDoms.contents.innerHTML = pghp.buildWholePage({historyIdx : 2});
+            pghp.addEventListeners();
+            break;
 
     }
 }
@@ -122,6 +131,8 @@ function returnPlayGround() {
                         <button class="save-to-gist">Save Sharing link here </button>
                         <input type="text" name="" id="">
                     </span>
+
+                    <button class="return">return</button>
                     
                     
                 </div>
