@@ -17,4 +17,10 @@ let mockPlayGroundHistory = [
         desc: "desc desc desc",
         videoPath: "/server/assets/video/水波进度样式 - 小红书.mp4"
     },
+    {
+        date: "test",
+        title: "test",
+        desc: "test",
+        videoPath: "/assets/html/2024-10-29-22:52:15open.mp4.html"
+    }
 ]

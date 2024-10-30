@@ -111,7 +111,7 @@ function renderPage() {
     }
 }
 
-function returnPlayGround() {
+function returnPlayGround(htmlPath) {
     // return html: 
     const strOfhtml = `
         <div class="playgroundContainer">
@@ -119,7 +119,7 @@ function returnPlayGround() {
                 <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Reprehenderit, sapiente.</p>
 
                 <div class="buttons">
-                    <a href="./sketchHTML/video.html" target="_blank"><button class="video">Open video</button></a>
+                    <a href="${htmlPath}" target="_blank"><button class="video">Open video</button></a>
                     
                     
                     <span class="github-link">
@@ -395,7 +395,7 @@ function renderLogsOfIndex(idx, previousQuizArray, isHidden, parent) {
         // let idx = index;
         button.addEventListener('click', function () {
             // button.classList.remove("hide");
-            console.log("index, clicked: ", index)
+            // console.log("index, clicked: ", index)
             renderPage();
         })
     })
@@ -797,7 +797,7 @@ function addSaveButtonEventListener() {
 
 function addEventListenerOfResetButton() {
     document.querySelector("button#reset").addEventListener('click', function () {
-        console.log("reset pressed!!");
+        // console.log("reset pressed!!");
         resetInputs();
     })
 }

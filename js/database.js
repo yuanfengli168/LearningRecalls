@@ -238,6 +238,37 @@ class MongoDBAtlas {
       }
   }
 
+
+  // upload the html to backend and create new html
+  async uploadVideoHTML(dataObj) {
+    try {
+      const response = await fetch('http://localhost:5001/uploadVideoMetaData', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: this.transferObjToJSON({
+          videoHTML: dataObj.videoHTML,
+          videoHTMLPagePath: dataObj.videoHTMLPagePath
+        })
+      })
+
+      console.log("DATA: ", {
+          videoHTML: dataObj.videoHTML,
+          videoHTMLPath: dataObj.videoHTMLPagePath
+        })
+
+      if (response.ok) {
+        alert("HTML created success!");
+      } else {
+        alert('HTML Failed!');
+      }
+    }
+    catch(e) {
+      console.error(e);
+    }
+  }
+
   // // upload date, video title, video description and video file path to back end, 
   // async uploadVideoMetaDataToDB(data) {
   //   try {

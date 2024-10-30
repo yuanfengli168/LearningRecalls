@@ -320,6 +320,28 @@ app.post('/upload', upload.single('video'), (req, res) => {
 });
 
 
+// Route to handle metadata of video uploads: 
+app.post('/uploadVideoMetaData', (req, res) => {
+  let data = req.body;
+  console.log("DATA SERVER: ", data);
+
+
+  const videoHTML = data.videoHTML;
+  const videoHTMLPagePath = data.videoHTMLPagePath;
+  console.log("htmlName type: ", typeof videoHTML);
+  const filePath = path.join(__dirname, videoHTMLPagePath);
+  console.log("Video file Path: ", filePath);
+
+  fs.writeFile(filePath, videoHTML, (err) => {
+    if (err) {
+      console.error("Error writing file: ", err);
+      return res.status(500).send("Failed to save HTML file");
+    }
+    res.status(200).send("HTML file saved successfully!");
+  })
+})
+
+
 
 /*
 ===================================================================================================

@@ -44,17 +44,19 @@ class PlayGroundHistoryPage extends CreationPage {
     addEventListenerOfPlay() {
         let playButtonElements = document.querySelectorAll(".contents .quiz .playground-item .playground-cards .take");
         playButtonElements.forEach((button, index) => button.addEventListener("click", () => {
-            console.log("Play clicked!!! ", index);
+            // console.log("Play clicked!!! ", index);
 
             let contents = document.querySelector(".contents");
             contents.innerHTML = '';
             
-            let pG = returnPlayGround(this.arrayOfObj[index].videoPath);
+            let videoPath = this.arrayOfObj[index].videoPath;
+            console.log("VideoPath: ", videoPath)
+            let pG = returnPlayGround(videoPath);
             contents.innerHTML = pG;
 
             this.addEventListenerOfReturn();
 
-            console.log("Video Path: ", this.arrayOfObj[index].videoPath);
+            // console.log("Video Path: ", this.arrayOfObj[index].videoPath);
         }))
 
         
@@ -70,7 +72,7 @@ class PlayGroundHistoryPage extends CreationPage {
         const returnButtonElement = document.querySelector(".contents .playgroundContainer .buttons button.return");
 
         returnButtonElement.addEventListener('click', () => {
-            console.log("Clicked")
+            // console.log("Clicked")
             let contents = document.querySelector(".contents");
             contents.innerHTML = '';
             

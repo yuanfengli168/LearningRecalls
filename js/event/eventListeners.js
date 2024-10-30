@@ -43,48 +43,6 @@ class EventListeners {
         this.addEventListenerOfSaveButton(this.doms.saveButtonElement);
         this.addEventListenerOfResetButton(this.doms.resetButtonElement);
         this.addEventListenerOfUploadButton(this.doms.uploadButtonElement);
-
-        let form = document.querySelector("#uploadForm");
-
-        form.addEventListener('submit', function(event) {
-            console.log("Form submitted!");
-            event.preventDefault(); // Prevent the form from submitting for demo purposes
-        });
-
-        form.addEventListener('reset', function() {
-            console.log("Form reset!");
-        });
-
-        // Log other common events
-        form.addEventListener('focusin', function(event) {
-            console.log("Focus in on: ", event.target);
-        });
-
-        form.addEventListener('focusout', function(event) {
-            console.log("Focus out from: ", event.target);
-        });
-
-        form.addEventListener('change', function(event) {
-            console.log("Change detected in: ", event.target);
-        });
-
-        form.addEventListener('input', function(event) {
-            console.log("Input event detected in: ", event.target);
-        });
-
-        // To catch all events, you can use the following approach
-        form.addEventListener('click', function(event) {
-            console.log("Click event detected on: ", event.target);
-        });
-
-        form.addEventListener('keyup', function(event) {
-            console.log("Key up event detected: ", event.key);
-        });
-
-        document.querySelector("#uploadForm").addEventListener("submit", () => {
-            console.log("############################");
-        })
-        // console.log("All event listener added!!")
     }
 
     // add event listener for all resetDateButtons, and reset to today date if clicked:
