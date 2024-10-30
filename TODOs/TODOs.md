@@ -62,3 +62,9 @@ e) fix the toggle functions, with the help of chatGPT: (https://chatgpt.com/shar
 
 #### 解决办法：
 
+
+
+#### By dates: 
+##### 10292024: 
+- 1. one commit to change the frequency of quiz from 6 to 3 only undo, 7 days, 30 days.
+- 2. 

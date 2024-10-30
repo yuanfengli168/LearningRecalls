@@ -24,12 +24,23 @@ class PlayGroundCreationPage extends CreationPage {
     }
 
      buildVideoUploadComponent(indexOnPage) {
+        // <button id="btnID" type="submit" onclick="return false">Upload</button>
         let uploadComponent = `
-            <form id="uploadForm" accept-charset="UTF-8">
+            <form id="uploadForm" accept-charset="UTF-8" onsubmit="return false;">
                 <input type="file" id="videoFile" accept="video/mp4" accept-charset="UTF-8" required>
-                <button type="button">Upload</button>
+                <input type="button" name="data" value="Upload">
+                <span class="indicator" style="display: inline-block; margin: 0 16px"></span>
             </form>
         `
+
+        // // still reloads the page:
+        // let uploadComponent = `
+        //     <div id="uploadForm">
+        //         <input type="file" id="videoFile" accept="video/mp4" accept-charset="UTF-8" required>
+        //         <input type="button" name="data" value="Upload">
+        //         <span class="indicator" style="display: inline-block; margin: 0 16px"></span>
+        //     </div>
+        // `
 
         this.array[indexOnPage] = uploadComponent;
         return uploadComponent;
@@ -61,32 +72,6 @@ class PlayGroundCreationPage extends CreationPage {
     addEventListeners() {
         const eventL = new EventListeners();
         eventL.addEventListenerOfPlayground();
-
-        // TODO: encapsul it!!
-        // test for uploadVideo: 
-        let button = document.querySelector("form#uploadForm button");
-        button.addEventListener('click', async () => {
-            const fileInput = document.getElementById('videoFile');
-            const formData = new FormData();
-            formData.append('video', fileInput.files[0]);
-            console.log("FormData: ", formData);
-
-            try {
-                const response = await fetch('http://localhost:5001/upload', {
-                method: 'POST',
-                body: formData,
-                });
-
-                if (response.ok) {
-                alert('Video uploaded successfully!');
-                } else {
-                alert('Failed to upload video.');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('An error occurred.');
-            }
-        })
     }
 }
 

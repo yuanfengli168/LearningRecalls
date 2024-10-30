@@ -309,11 +309,13 @@ const upload = multer({ storage });
 // Route to handle video uploads
 app.post('/upload', upload.single('video'), (req, res) => {
   if (req.file) {
-    console.log("fileName: ", req.file);
-    console.log("req.body: ", req.body);
+    // console.log("fileName: ", req.file);
+    // console.log("req.body: ", req.body);
     res.status(200).send('File uploaded successfully');
+    // return res.json(true);
   } else {
     res.status(400).send('Failed to upload file');
+    // return res.json(false);
   }
 });
 
