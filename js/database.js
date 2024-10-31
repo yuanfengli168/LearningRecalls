@@ -269,12 +269,27 @@ class MongoDBAtlas {
     }
   }
 
-  // // upload date, video title, video description and video file path to back end, 
-  // async uploadVideoMetaDataToDB(data) {
-  //   try {
-  //     // TODOs.
-  //   }
-  // }
+  // upload date, video title, video description and video file path to back end, 
+  async uploadVideoMetaDataToDB(data) {
+    try {
+      const response = await fetch("http://localhost:5001/api/playground/post-metadata", {
+        method: "POST",
+        headers: {
+          'contentType' : 'application/json',
+        },
+        body: this.transferObjToJSON(data),
+      })
+
+      if (response.ok) {
+        return true;
+      }
+      return false;
+    }
+    catch (e) {
+      console.error(e);
+      return false;
+    }
+  }
 
   transferObjToJSON(obj) {
     return JSON.stringify(obj);

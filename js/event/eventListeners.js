@@ -65,7 +65,7 @@ class EventListeners {
         let isRequestInProgress = false;
 
         button.addEventListener('click', () => {
-            console.log("isRequestInProgress? ", isRequestInProgress);
+            // console.log("isRequestInProgress? ", isRequestInProgress);
             if (isRequestInProgress) return;
             isRequestInProgress = true;
 
@@ -340,15 +340,24 @@ class EventListeners {
                 let formData = new FormData();
                 formData.append('video', data.video);
                 let suc1 = await db.uploadVideo(formData);
-                console.log("UPLOAD VIDEO: ", suc1);
                 
                 const dataObj = {
                     videoHTML: data.videoHTML,
                     videoHTMLPagePath: data.videoHTMLPagePath,
                 }
-                console.log("dataObj: ", dataObj)
                 let suc2 = await db.uploadVideoHTML(dataObj);
-                return suc1 && suc2;
+
+                const metaDataObj = {
+                    userID: ROOT_USER_ID,
+                    date: data.date,
+                    title: data.title,
+                    desc: data.desc,
+                    videoPath: data.videoPath,
+                }
+                let suc3 = await db.uploadVideoMetaDataToDB(metaDataObj);
+
+
+                return suc1 && suc2 && suc3;
         }
     }
     

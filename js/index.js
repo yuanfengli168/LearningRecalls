@@ -218,10 +218,17 @@ function needsReview(quiz) {
 
     const diffDays = (new Date(todayDate).getTime() - new Date(quizDate).getTime()) / (1000 * 3600 * 24);
 
+    // // This implementation valid until Oct.30. 
+    // if ((quiz.results.length === 0 && diffDays !== 0) ||
+    //     [1, 7, 14, 28, 56].includes(diffDays) && Array.from(quiz.results).at(-1).finishedDateTime.split(" ")[0] !== todayDate) {
+    //     return true;
+    // }
+
     if ((quiz.results.length === 0 && diffDays !== 0) ||
-        [1, 7, 14, 28, 56].includes(diffDays) && Array.from(quiz.results).at(-1).finishedDateTime.split(" ")[0] !== todayDate) {
+        [7, 28].includes(diffDays) && Array.from(quiz.results).at(-1).finishedDateTime.split(" ")[0] !== todayDate) {
         return true;
     }
+    
     else return false;
 }
 

@@ -6,6 +6,8 @@ const dotenv = require('dotenv');
 const multer = require('multer');
 const fs = require('fs');
 const sanitize = require('sanitize-filename'); 
+// Import routes: 
+const playGroundRoutes = require('./routes/playGroundRouts');
 
 dotenv.config(); // Load environment variables from .env file
 
@@ -22,6 +24,7 @@ app.use(cors()); // enable CORS for all routes and origins
 // DATABASE:
 const DB_NAME = "learningRecalls";
 const COLLECTION_NAME = "allData";
+const PLAY_GROUND_COLLECTION_NAME = "playGround";
 const mongoUri = process.env.MONGODB_URI;
 
 let dbClient;
@@ -342,6 +345,11 @@ app.post('/uploadVideoMetaData', (req, res) => {
   })
 })
 
+
+// Route to handle metadata post to 
+// 1) existing database called learningRecalls, 
+// 2) a new collection called playGrounds
+app.use('/api/playground', playGroundRoutes);
 
 
 /*
