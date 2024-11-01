@@ -280,10 +280,23 @@ class MongoDBAtlas {
         body: this.transferObjToJSON(data),
       })
 
-      if (response.ok) {
+      // if (response.ok) {
+      //   return true;
+      // }
+      // return false;
+      if (response === "inserted") {
+        console.log("uploadvideoMetaData: ", true);
+        return true;
+      } 
+      else if (response === "existed") {
+        console.log("uploadvideoMetaData: ", "existed");
         return true;
       }
-      return false;
+      else {
+        return false;
+      }
+
+      
     }
     catch (e) {
       console.error(e);

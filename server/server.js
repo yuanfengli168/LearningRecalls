@@ -6,8 +6,6 @@ const dotenv = require('dotenv');
 const multer = require('multer');
 const fs = require('fs');
 const sanitize = require('sanitize-filename');
-// Import routes: 
-const playGroundRoutes = require('./routes/playGroundRouts');
 
 dotenv.config(); // Load environment variables from .env file
 
@@ -23,7 +21,9 @@ app.use(cors()); // enable CORS for all routes and origins
 // ===================================================================================================
 // DATABASE:
 const DB_NAME = "learningRecalls";
+const DB_TEST_NAME = "dbTests";
 const COLLECTION_NAME = "allData";
+const COLLECTION_TEST_NAME = "collectionTest";
 const PLAY_GROUND_COLLECTION_NAME = "playGround";
 const mongoUri = process.env.MONGODB_URI;
 
@@ -42,14 +42,44 @@ class DBClient {
     this.document = null;
   }
 
+  // see if the database exists?
+  async doesDbExist(dbName) {
+    const client = this.dbClient;
+
+    try {
+      const adminDb = client.db().admin();
+      const databases = await adminDb.listDatabases();
+
+      // Check if the specified database exists
+      const dbExists = databases.databases.some(db => db.name === dbName);
+
+      if (dbExists) {
+        console.log(`Database "${dbName}" exists.`);
+        return true;
+      } else {
+        console.log(`Database "${dbName}" does not exist.`);
+        return false;
+      }
+    } catch (error) {
+      console.error('Error checking database existence:', error);
+      return null;
+    }
+  }
+
   // get db by dbName;
   getDatabase(dbName) {
+    // so this actually create the db, if it does not exists.
     return dbClient.db(dbName);
   }
 
   // get collection by dbName and collectionName
   getCollection(dbName, collectionName) {
     return this.getDatabase(dbName).collection(collectionName);
+  }
+  
+  // check if data exists in the collection?
+  async checkIfDataInCol(collection, data) {
+    return await collection.findOne(data);
   }
 
   /**
@@ -86,13 +116,6 @@ async function connectToDatabase() {
     console.log('MongoDB connected');
     dbClientClass = new DBClient(dbClient);
 
-    console.log("DbClientClass 1: ", dbClientClass);
-    module.exports = dbClientClass;
-
-    // for oterh module to use dbClientClass
-    // module.exports = { dbClientClass };
-    // console.log("DBClientClass: ", dbClientClass);
-
     console.log("dbClientClass initiated");
   } catch (error) {
     console.error('MongoDB connection error:', error);
@@ -101,7 +124,7 @@ async function connectToDatabase() {
 }
 // Connect to the database when starting the server
 connectToDatabase();
-console.log("DbClientClass after: ", dbClientClass);
+// console.log("DbClientClass after: ", dbClientClass);
 
 
 // // for oterh module to use dbClientClass
@@ -358,12 +381,39 @@ app.post('/uploadVideoMetaData', (req, res) => {
 })
 
 
-// Route to handle metadata post to 
-// 1) existing database called learningRecalls, 
-// 2) a new collection called playGrounds
-console.log("DBClientClass 2: ", dbClientClass);
-// app.use('/api/playground', playGroundRoutes(dbClientClass));
-app.use('/api/playground', playGroundRoutes);
+// handle post action for playground
+app.post('/api/playground/post-metadata', async (req, res) => {
+  let metaData = req.body;
+  // let metaData = { name: 'John Doe', age: 30, city: 'New York' };
+  let databaseName = DB_TEST_NAME;
+
+  try {
+    // for the first timer users, check if the database exists? 
+    // let isDbExist = await dbClientClass.doesDbExist(databaseName);
+    // console.log("IS DB EXST? ? ....... ", isDbExist);
+    // let db = dbClientClass.getDatabase(databaseName); // will create if not exists.
+    // console.log("Created and got the db: ", db);
+    let collection = dbClientClass.getCollection(databaseName, COLLECTION_TEST_NAME); // this will build db and collection if not exists.
+    // console.log("Created Collection: ", collection);
+    dbClientClass.checkIfDataInCol(collection, metaData);
+
+    let dataInCol = await dbClientClass.checkIfDataInCol(collection, metaData);
+    
+    if (dataInCol) {
+      res.json("existed");
+      res.send("existed!!");
+    }
+    else {
+      await collection.insertOne(metaData);
+      res.json("inserted");
+      res.send("inserted!!!")
+    }
+    
+  }
+  catch (e) {
+    console.error(e);
+  }
+})
 
 
 /*
@@ -430,5 +480,3 @@ app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
 
-console.log("DB instance 4: ", dbClientClass)
-module.exports = dbClientClass;

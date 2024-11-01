@@ -337,6 +337,7 @@ class EventListeners {
     async takeActionsInDB(db, data) {
         switch (this.currentPage) {
             case "Create Play Ground": 
+            
                 const metaDataObj = {
                     userID: ROOT_USER_ID,
                     date: data.date,

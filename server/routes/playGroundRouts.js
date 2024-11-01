@@ -76,20 +76,5 @@ const router = express.Router();
         res.send("post metadata!!")
     })
 
-// function printMethodNames(Class) {
-//   // Get the prototype of the class
-//   const prototype = Object.getPrototypeOf(new Class());
-  
-//   // Get all property names on the prototype
-//   const methodNames = Object.getOwnPropertyNames(prototype)
-//     .filter(prop => typeof prototype[prop] === 'function' && prop !== 'constructor');
-
-//   console.log("Method names:", methodNames);
-// }
-
-// // Usage
-// printMethodNames(ExampleClass);
-
-
 
 module.exports = router;
