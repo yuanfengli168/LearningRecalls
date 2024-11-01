@@ -5,7 +5,7 @@ const { MongoClient } = require('mongodb');
 const dotenv = require('dotenv');
 const multer = require('multer');
 const fs = require('fs');
-const sanitize = require('sanitize-filename'); 
+const sanitize = require('sanitize-filename');
 // Import routes: 
 const playGroundRoutes = require('./routes/playGroundRouts');
 
@@ -27,13 +27,13 @@ const COLLECTION_NAME = "allData";
 const PLAY_GROUND_COLLECTION_NAME = "playGround";
 const mongoUri = process.env.MONGODB_URI;
 
-let dbClient;
-let dbClientClass;
+var dbClient;
+var dbClientClass;
 
 
 class DBClient {
   defaultDBName = DB_NAME;
-  defaultCollectionName = COLLECTION_NAME; 
+  defaultCollectionName = COLLECTION_NAME;
 
   constructor(dbClient) {
     this.dbClient = dbClient ?? null;
@@ -58,7 +58,7 @@ class DBClient {
   * @param {collection in mongoClient} collection 
   */
   async findUserIDInCol(userID, collection) {
-    return await collection.findOne({userID: userID});
+    return await collection.findOne({ userID: userID });
   }
 
   /**
@@ -68,11 +68,11 @@ class DBClient {
   * @returns 
   */
   getColInDB(collection, database) {
-      let db = dbClient.db(database);
-      let dbCollection = db.collection(collection);
+    let db = dbClient.db(database);
+    let dbCollection = db.collection(collection);
 
-      return dbCollection;
-  } 
+    return dbCollection;
+  }
 }
 
 // Connect to MongoDB
@@ -85,6 +85,14 @@ async function connectToDatabase() {
     await dbClient.connect();
     console.log('MongoDB connected');
     dbClientClass = new DBClient(dbClient);
+
+    console.log("DbClientClass 1: ", dbClientClass);
+    module.exports = dbClientClass;
+
+    // for oterh module to use dbClientClass
+    // module.exports = { dbClientClass };
+    // console.log("DBClientClass: ", dbClientClass);
+
     console.log("dbClientClass initiated");
   } catch (error) {
     console.error('MongoDB connection error:', error);
@@ -93,7 +101,11 @@ async function connectToDatabase() {
 }
 // Connect to the database when starting the server
 connectToDatabase();
+console.log("DbClientClass after: ", dbClientClass);
 
+
+// // for oterh module to use dbClientClass
+// module.exports = { dbClientClass };
 
 // ================================================================================================
 // ROUTES:
@@ -121,40 +133,40 @@ app.get('/api/quizs', async (req, res) => {
 
 // api/data
 // saving new obj to database: 
-app.put('/api/data', async (req,res) => {
-    let data = req.body;
-    let userID = req.body.userID;
-    let date = data.date;
+app.put('/api/data', async (req, res) => {
+  let data = req.body;
+  let userID = req.body.userID;
+  let date = data.date;
 
-    // check if the database have this userID. 
-    let collection = dbClientClass.getColInDB(COLLECTION_NAME, DB_NAME);
-    let document = await dbClientClass.findUserIDInCol(userID, collection);
+  // check if the database have this userID. 
+  let collection = dbClientClass.getColInDB(COLLECTION_NAME, DB_NAME);
+  let document = await dbClientClass.findUserIDInCol(userID, collection);
 
-    let mapOfDates = new Map(); // key: dates, value are map of tags in object format.
-    let mapOfTags = new Map();  // key: tags, value are object
+  let mapOfDates = new Map(); // key: dates, value are map of tags in object format.
+  let mapOfTags = new Map();  // key: tags, value are object
 
-    // userID not exist.
-    if (document === null) {
-      mapOfDates = createMapOfDates(data);
-      await collection.insertOne({userID: userID, dates: transferMapToObject(mapOfDates)});
+  // userID not exist.
+  if (document === null) {
+    mapOfDates = createMapOfDates(data);
+    await collection.insertOne({ userID: userID, dates: transferMapToObject(mapOfDates) });
     // userID exist:
-    } else {
-      objectOfDates = document.dates;
-      // TODO: if there is no .dates found what should you do?
-      mapOfDates = transferObjectToMap(objectOfDates);
+  } else {
+    objectOfDates = document.dates;
+    // TODO: if there is no .dates found what should you do?
+    mapOfDates = transferObjectToMap(objectOfDates);
 
-      // if date exist get mapOfTags. 
-      if (mapOfDates.get(date)) {
-        mapOfTags = transferObjectToMap(mapOfDates.get(date));
-      } 
-      // else would be an empty map.
-      mapOfTags = createMapOfTags(data, mapOfTags);
-      mapOfDates.set(date, transferMapToObject(mapOfTags));
-
-      await collection.updateOne({userID: userID}, {$set: {dates: transferMapToObject(mapOfDates)}});
+    // if date exist get mapOfTags. 
+    if (mapOfDates.get(date)) {
+      mapOfTags = transferObjectToMap(mapOfDates.get(date));
     }
-    
-    return res.json('it worked!!');
+    // else would be an empty map.
+    mapOfTags = createMapOfTags(data, mapOfTags);
+    mapOfDates.set(date, transferMapToObject(mapOfTags));
+
+    await collection.updateOne({ userID: userID }, { $set: { dates: transferMapToObject(mapOfDates) } });
+  }
+
+  return res.json('it worked!!');
 });
 
 app.post('/api/scores', async (req, res) => {
@@ -187,9 +199,9 @@ app.post('/api/scores', async (req, res) => {
       score: score,
     }
     results.push(obj);
-    
+
     // set in database.
-    const filter = {userID: userID};
+    const filter = { userID: userID };
     let keys = "dates." + date + "." + tag + ".results";
     // the following won't work, as well as str.concat();
     // const keys = `dates.${date}.${tag}.results`;
@@ -199,19 +211,19 @@ app.post('/api/scores', async (req, res) => {
     // use [] as computed property names.
     const update = {
       // $set: {"dates.2024-09-20.html.results" : results} // this works though
-      $set: { [keys] : results}
+      $set: { [keys]: results }
     };
     await collection.updateOne(filter, update);
 
     return res.json();
-  } 
+  }
   catch (e) {
     console.error(e);
   }
 });
 
 // return all tags for the usrID for all dates
-app.get('/api/all-tags', async(req, res) => {
+app.get('/api/all-tags', async (req, res) => {
   try {
     const query = req.query;
     const userID = +query.userID;
@@ -245,7 +257,7 @@ app.get('/api/all-tags', async(req, res) => {
 });
 
 // return all tags for the userID for the selected date
-app.get('/api/today-tags', async(req, res) => {
+app.get('/api/today-tags', async (req, res) => {
   try {
     const query = req.query;
     const date = query.date;
@@ -254,12 +266,12 @@ app.get('/api/today-tags', async(req, res) => {
     if (!mapOfDates || !mapOfDates[date]) {
       res.json([]);
     }
-    else {  
+    else {
       const set = new Set();
       for (const [tag, objectOfData] of transferObjectToMap(mapOfDates[date])) {
         set.add(tag);
       }
-      
+
       const resultArray = [...set];
       res.json(resultArray);
     }
@@ -271,7 +283,7 @@ app.get('/api/today-tags', async(req, res) => {
 })
 
 // return only one row of data by date and tag: 
-app.get('/api/contents-and-answers', async(req, res) => {
+app.get('/api/contents-and-answers', async (req, res) => {
   try {
     const query = req.query;
     const userID = +query.userID;
@@ -304,7 +316,7 @@ const storage = multer.diskStorage({
   filename: (req, file, cb) => {
     // Use the original filename, ensuring UTF-8 compatibility: 
     file.originalname = Buffer.from(file.originalname, 'latin1').toString('utf-8');
-     cb(null, file.originalname);
+    cb(null, file.originalname);
   }
 });
 const upload = multer({ storage });
@@ -349,6 +361,8 @@ app.post('/uploadVideoMetaData', (req, res) => {
 // Route to handle metadata post to 
 // 1) existing database called learningRecalls, 
 // 2) a new collection called playGrounds
+console.log("DBClientClass 2: ", dbClientClass);
+// app.use('/api/playground', playGroundRoutes(dbClientClass));
 app.use('/api/playground', playGroundRoutes);
 
 
@@ -415,3 +429,6 @@ process.on('SIGTERM', gracefulShutdown);
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
+console.log("DB instance 4: ", dbClientClass)
+module.exports = dbClientClass;

@@ -337,6 +337,17 @@ class EventListeners {
     async takeActionsInDB(db, data) {
         switch (this.currentPage) {
             case "Create Play Ground": 
+                const metaDataObj = {
+                    userID: ROOT_USER_ID,
+                    date: data.date,
+                    title: data.title,
+                    desc: data.desc,
+                    videoPath: data.videoPath,
+                }
+                console.log("metaDataObj: ", metaDataObj);
+                let suc3 = await db.uploadVideoMetaDataToDB(metaDataObj);
+
+
                 let formData = new FormData();
                 formData.append('video', data.video);
                 let suc1 = await db.uploadVideo(formData);
@@ -347,14 +358,15 @@ class EventListeners {
                 }
                 let suc2 = await db.uploadVideoHTML(dataObj);
 
-                const metaDataObj = {
-                    userID: ROOT_USER_ID,
-                    date: data.date,
-                    title: data.title,
-                    desc: data.desc,
-                    videoPath: data.videoPath,
-                }
-                let suc3 = await db.uploadVideoMetaDataToDB(metaDataObj);
+                // const metaDataObj = {
+                //     userID: ROOT_USER_ID,
+                //     date: data.date,
+                //     title: data.title,
+                //     desc: data.desc,
+                //     videoPath: data.videoPath,
+                // }
+                // console.log("metaDataObj: ", metaDataObj);
+                // let suc3 = await db.uploadVideoMetaDataToDB(metaDataObj);
 
 
                 return suc1 && suc2 && suc3;

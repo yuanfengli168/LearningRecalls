@@ -275,7 +275,7 @@ class MongoDBAtlas {
       const response = await fetch("http://localhost:5001/api/playground/post-metadata", {
         method: "POST",
         headers: {
-          'contentType' : 'application/json',
+          'Content-Type' : 'application/json',
         },
         body: this.transferObjToJSON(data),
       })
