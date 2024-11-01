@@ -118,28 +118,55 @@ function renderPage() {
 }
 
 // 
-function returnPlayGround(videoPath, codePenPath = "https://codepen.io/pen/") {
+function returnPlayGround(videoPath, codePenPath = "https://codepen.io/pen/", metaDataObj) {
+    if (codePenPath == "") {
+        codePenPath = "https://codepen.io/pen/";
+    }
+
+    let banner;
+    let disabled;
+    let aTagOfVideo;
+    if (!metaDataObj) {
+        banner = `Welcome to playground!!!!`;
+        disabled = "disabled";
+        aTagOfVideo = "Open video"
+    }
+    else {
+        banner = `Created Date: ${metaDataObj.date}; Title: ${metaDataObj.title}; Desc: ${metaDataObj.desc}`; 
+        disabled = "";
+        aTagOfVideo = `<a href="${videoPath}" target="_blank">Open video</a>`
+    }
+    
+    
+
     // return html: 
     const strOfhtml = `
         <div class="playgroundContainer">
             <div class="sub-header clearfix">
-                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Reprehenderit, sapiente.</p>
+                <p> ${banner} </p>
 
                 <div class="buttons">
-                    <a href="${videoPath}" target="_blank"><button class="video">Open video</button></a>
+                    <button class="video" ${disabled}>${aTagOfVideo}</button>
                     
                     
                     <span class="github-link">
-                        <button class="save-to-gist">Save Github link here</button>
+                        <button disabled class="save-to-gist">Save Github link here</button>
                         <input type="text" name="" id="">
                     </span>
 
                     <span class="share-link">
-                        <button class="save-to-gist">Save Sharing link here </button>
+                        <button disabled class="save-to-gist">Save Sharing link here </button>
                         <input type="text" name="" id="">
                     </span>
 
-                    <button class="return">return</button>
+                    <span class="score">
+                        Score:
+                        <input type="text">
+                    </span>
+
+                    <button class="save-all" style="background: lightblue;">save both link</button>
+
+                    <button class="return" style="background: beige">return</button>
                     
                     
                 </div>

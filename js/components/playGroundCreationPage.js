@@ -28,7 +28,7 @@ class PlayGroundCreationPage extends CreationPage {
         let uploadComponent = `
             <form id="uploadForm" accept-charset="UTF-8" onsubmit="return false;">
                 <input type="file" id="videoFile" accept="video/mp4" accept-charset="UTF-8" required>
-                <input type="button" name="data" value="Upload">
+                <input disabled type="button" name="data" value="Upload">
                 <span class="indicator" style="display: inline-block; margin: 0 16px"></span>
             </form>
         `

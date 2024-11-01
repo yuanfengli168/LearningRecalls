@@ -333,7 +333,32 @@ class MongoDBAtlas {
     }
   }
 
+  // save both github gists and codepen link to database: 
+  async postBothLink(data) {
+    try {
+      const response = fetch('http://localhost:5001/api/playground/post-both-link', {
+        method: "POST",
+        headers: {
+          "Content-Type" : "application/json"
+        },
+        body: data
+      })
+
+      if (response.ok) {
+        return true;
+      }
+      else {
+        return false;
+      }
+    }
+    catch (e) {
+      console.error(e);
+    }
+  }
+
   transferObjToJSON(obj) {
     return JSON.stringify(obj);
   }
 }
+
+

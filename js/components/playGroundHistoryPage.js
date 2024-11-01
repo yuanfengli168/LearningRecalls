@@ -19,7 +19,7 @@ class PlayGroundHistoryPage extends CreationPage {
         this.arrayOfObj = result;
 
         console.log("THIS. arrayOfObj: ", this.arrayOfObj);
-        
+
         return result;
     }
 
@@ -75,7 +75,7 @@ class PlayGroundHistoryPage extends CreationPage {
         this.addEventListeners();
     }
 
-    
+
 
     // buildWholePage({historyIdx}) {
     //     this.historyIdx = historyIdx;
@@ -83,7 +83,7 @@ class PlayGroundHistoryPage extends CreationPage {
     //     return this.buildSkeleton();
     // }
 
-    buildWholePage({historyIdx}) {
+    buildWholePage({ historyIdx }) {
         this.historyIdx = this.historyIdx;
         return this.buildSkeleton();
     }
@@ -103,11 +103,23 @@ class PlayGroundHistoryPage extends CreationPage {
 
             let contents = document.querySelector(".contents");
             contents.innerHTML = '';
-            
+
+            let currentObj = this.arrayOfObj[index];
             let videoHTMLPagePath = this.arrayOfObj[index].videoHTMLPagePath;
-            let pG = returnPlayGround(videoHTMLPagePath);
+
+
+            // quick fix to pass date, title, desc, videoHTMLPagePath
+            let obj = {
+                userID: ROOT_USER_ID,
+                date: currentObj.date,
+                title: currentObj.title,
+                desc: currentObj.desc,
+                videoHTMLPagePath: currentObj.videoHTMLPagePath
+            }
+            let pG = returnPlayGround(videoHTMLPagePath, "", obj);
             contents.innerHTML = pG;
 
+            this.addEventListenerOfSaveBothLinks(obj);
             this.addEventListenerOfReturn();
 
         }))
@@ -117,7 +129,7 @@ class PlayGroundHistoryPage extends CreationPage {
     addEventListenerOfLogs() {
         let logsButtonElements = document.querySelectorAll(".contents .quiz .playground-item .playground-cards button.logs");
         logsButtonElements.forEach((button, index) => button.addEventListener("click", () => {
-            const parent = document.querySelectorAll(".contents .quiz .playground-item")[index]; 
+            const parent = document.querySelectorAll(".contents .quiz .playground-item")[index];
 
             if (button.classList.contains("active")) {
                 button.classList.remove("active");
@@ -150,13 +162,14 @@ class PlayGroundHistoryPage extends CreationPage {
             button.addEventListener("click", () => {
                 let codePenPath = logs[index].codepenLink;
                 console.log("codePenPath: ", codePenPath);
-                
+
                 contents.innerHTML = '';
                 let pG = returnPlayGround(videoHTMLPagePath, codePenPath);
                 contents.innerHTML = pG;
 
+                this.addEventListenerOfSaveBothLinks();
                 this.addEventListenerOfReturn();
-            })            
+            })
         })
     }
 
@@ -167,15 +180,57 @@ class PlayGroundHistoryPage extends CreationPage {
         returnButtonElement.addEventListener('click', () => {
             let contents = document.querySelector(".contents");
             contents.innerHTML = '';
-            
-            let pG = this.buildWholePage({historyIdx: 2});
+
+            let pG = this.buildWholePage({ historyIdx: 2 });
             contents.innerHTML = pG;
             this.buildHistoryTabs(2);
 
             // this.addEventListeners();
         })
 
-        
+
+    }
+
+    // saving both github gists and sharing link with one button
+    addEventListenerOfSaveBothLinks(obj) {
+        const saveBothButton = document.querySelector(".contents .playgroundContainer .sub-header .buttons button.save-all");
+
+
+        saveBothButton.addEventListener('click', async () => {
+            const strGithub = document.querySelector(".contents .playgroundContainer .sub-header .buttons .github-link input").value;
+            const strCodepen = document.querySelector(".contents .playgroundContainer .sub-header .buttons .share-link input").value;
+            const strScore = document.querySelector(".contents .playgroundContainer .sub-header .buttons .score input").value;
+
+            if (!strGithub || !strCodepen) {
+                window.alert("Both link need to be filled");
+                return;
+            }
+
+            console.log("g, s, c", strGithub, strCodepen, strScore);
+
+            let data = {
+                queryObj: obj,
+                paramObj: {
+                    date: '2024-10-31',
+                    time: getCurrentTime(),
+                    score: strScore, 
+                    githubLink: strGithub,
+                    codepenLink: strCodepen
+                }
+            }
+            console.log("DATA: ", data);
+            data = JSON.stringify(data);
+            let saved = await this.db.postBothLink(data);
+            console.log("SAVED: ", saved);
+
+            if (saved) {
+                console.log("Successed!!!")
+            }
+            else {
+                console.log("Something error happend!!");
+            }
+        })
+
     }
 
     // create the log part for the divs.

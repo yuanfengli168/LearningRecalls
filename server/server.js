@@ -22,8 +22,10 @@ app.use(cors()); // enable CORS for all routes and origins
 // DATABASE:
 const DB_NAME = "learningRecalls";
 const DB_TEST_NAME = "dbTests";
+const DB_PLAYGROUND = 'dbPlayground'
 const COLLECTION_NAME = "allData";
 const COLLECTION_TEST_NAME = "collectionTest";
+const COLLECTION_PLAYGROUND = "collectionPlayground";
 const PLAY_GROUND_COLLECTION_NAME = "playGround";
 const mongoUri = process.env.MONGODB_URI;
 
@@ -384,8 +386,8 @@ app.post('/uploadVideoMetaData', (req, res) => {
 // handle post action for playground
 app.post('/api/playground/post-metadata', async (req, res) => {
   let metaData = req.body;
-  let databaseName = DB_TEST_NAME;
-  let collectionName = COLLECTION_TEST_NAME
+  let databaseName = DB_PLAYGROUND;
+  let collectionName = COLLECTION_PLAYGROUND
 
   try {
     let collection = dbClientClass.getCollection(databaseName, collectionName); // this will build db and collection if not exists.
@@ -419,8 +421,8 @@ app.get('/api/playground/get-all-history', async (req, res) => {
   const userID = +query.userID;
 
   // database name and collection name are hardcoded
-  const dbName = DB_TEST_NAME;
-  const collectionName = COLLECTION_TEST_NAME;
+  const dbName = DB_PLAYGROUND;
+  const collectionName = COLLECTION_PLAYGROUND;
 
   try {
     const dbQuery = { userID: userID };
@@ -439,10 +441,103 @@ app.get('/api/playground/get-all-history', async (req, res) => {
 })
 
 
+app.post('/api/playground/post-both-link', async (req, res) => {
+  let data = req.body;
+  
+
+  try {
+    // testing purpose: 
+    // let collection = dbClientClass.getCollection(DB_TEST_NAME, COLLECTION_TEST_NAME);
+
+    let collection = dbClientClass.getCollection(DB_PLAYGROUND, COLLECTION_PLAYGROUND);
+    let document = await collection.findOne(data.queryObj);
+    console.log("Document: ", document);
+    
+
+    let logs = document.logs;
+    console.log("LOGS: ", logs);
+    console.log(Array.isArray(logs));
+
+    if (!Array.isArray(logs)) {
+      logs = [];
+    }
+
+    // check duplicates: 
+    // if (logs.includes(data.paramObj)) { // this will check the reference
+    if (logsContainObj(data.paramObj, logs)) {
+      return res.status(200).send("existed!!!");
+    }
+
+    console.log("ParamObj: ", data.paramObj);
+    let updatedLogs = logs.slice().concat([data.paramObj]);
+    console.log("UP", updatedLogs);
+
+    const filter = {
+      userID: document.userID,
+      date: document.date,
+      title: document.title
+    };
+    const update = {
+      $set : {logs : updatedLogs}
+    }
+    const result = await collection.updateOne(filter, update);
+
+    // console.log(`Matched ${result.matchedCount} document(s) and modified ${result.modifiedCount} document(s).`);
+    // res.status(200).send("Find the document!!\n" + JSON.stringify(document));
+    if (result.modifiedCount === 1) {
+      res.status(200).send(true);
+    }
+    else {
+      res.status(500).send(false);
+    }
+
+
+
+  }
+  catch (e) {
+    console.error(e);
+    res.status(500).send("error occured");
+  }
+})
+
+
 /*
 ===================================================================================================
 Helper Functions below!
 */
+// see if the obj in the array: 
+
+function logsContainObj(obj, array) {
+  return array.some((item) => deepEqual(item, obj));
+}
+
+function deepEqual(obj1, obj2) {
+  // Check if both are strictly equal
+  if (obj1 === obj2) return true;
+
+  // Check if both are objects (including arrays), and not null
+  if (typeof obj1 !== 'object' || obj1 === null || typeof obj2 !== 'object' || obj2 === null) {
+    return false;
+  }
+
+  // Get keys from both objects
+  const keys1 = Object.keys(obj1);
+  const keys2 = Object.keys(obj2);
+
+  // Check if they have the same number of keys
+  if (keys1.length !== keys2.length) return false;
+
+  // Check if all keys and values are the same recursively
+  for (const key of keys1) {
+    if (!keys2.includes(key) || !deepEqual(obj1[key], obj2[key])) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+
 // return a key of array
 // by decreasing order of count
 function sortMap(map) {
