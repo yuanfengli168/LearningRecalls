@@ -167,6 +167,7 @@ function returnPlayGround(videoPath, codePenPath = "https://codepen.io/pen/", me
                     <button class="save-all" style="background: lightblue;">save both link</button>
 
                     <button class="return" style="background: beige">return</button>
+                    <span id="playground-indicator"></span>
                     
                     
                 </div>

@@ -336,7 +336,7 @@ class MongoDBAtlas {
   // save both github gists and codepen link to database: 
   async postBothLink(data) {
     try {
-      const response = fetch('http://localhost:5001/api/playground/post-both-link', {
+      const response = await fetch('http://localhost:5001/api/playground/post-both-link', {
         method: "POST",
         headers: {
           "Content-Type" : "application/json"
@@ -345,11 +345,13 @@ class MongoDBAtlas {
       })
 
       if (response.ok) {
+        console.log("Response!!!", response.ok);
         return true;
       }
       else {
         return false;
       }
+      // console.log("REsponse: ", response);
     }
     catch (e) {
       console.error(e);

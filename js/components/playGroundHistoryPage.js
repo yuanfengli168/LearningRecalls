@@ -158,16 +158,28 @@ class PlayGroundHistoryPage extends CreationPage {
         let logs = this.arrayOfObj[parentIndex].logs;
         let contents = document.querySelector(".contents");
 
+
         childElements.forEach((button, index) => {
             button.addEventListener("click", () => {
                 let codePenPath = logs[index].codepenLink;
                 console.log("codePenPath: ", codePenPath);
 
                 contents.innerHTML = '';
-                let pG = returnPlayGround(videoHTMLPagePath, codePenPath);
+                let currentObj = this.arrayOfObj[parentIndex];
+                console.log("CURRENT obj", currentObj);
+                let obj = {
+                    userID: ROOT_USER_ID,
+                    date: currentObj.date,
+                    title: currentObj.title,
+                    desc: currentObj.desc,
+                    videoHTMLPagePath: currentObj.videoHTMLPagePath
+                }
+                let pG = returnPlayGround(videoHTMLPagePath, codePenPath, obj);
                 contents.innerHTML = pG;
 
-                this.addEventListenerOfSaveBothLinks();
+
+
+                this.addEventListenerOfSaveBothLinks(obj);
                 this.addEventListenerOfReturn();
             })
         })
@@ -213,7 +225,7 @@ class PlayGroundHistoryPage extends CreationPage {
                 paramObj: {
                     date: '2024-10-31',
                     time: getCurrentTime(),
-                    score: strScore, 
+                    score: strScore,
                     githubLink: strGithub,
                     codepenLink: strCodepen
                 }
@@ -223,12 +235,18 @@ class PlayGroundHistoryPage extends CreationPage {
             let saved = await this.db.postBothLink(data);
             console.log("SAVED: ", saved);
 
+            let spanIndicator = document.getElementById("playground-indicator");
             if (saved) {
                 console.log("Successed!!!")
+                spanIndicator.textContent = "Saved";
+                spanIndicator.setAttribute("style", "background: darkgreen;");
             }
             else {
                 console.log("Something error happend!!");
+                spanIndicator.textContent = "Failed";
+                spanIndicator.setAttribute("style", "background: red;");
             }
+            setTimeout(() => spanIndicator.setAttribute("style", "display: none"), 3000);
         })
 
     }
@@ -238,6 +256,9 @@ class PlayGroundHistoryPage extends CreationPage {
         if (!arrayOfLogs || arrayOfLogs.length < 1) {
             return "No logs so far!!!!";
         }
+
+        arrayOfLogs.reverse();
+        arrayOfLogs = arrayOfLogs.slice(0, 3);
 
         let result = "";
         // TODO: why it says arrayOfLogs is not iterable:
