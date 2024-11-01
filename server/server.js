@@ -384,19 +384,11 @@ app.post('/uploadVideoMetaData', (req, res) => {
 // handle post action for playground
 app.post('/api/playground/post-metadata', async (req, res) => {
   let metaData = req.body;
-  // let metaData = { name: 'John Doe', age: 30, city: 'New York' };
   let databaseName = DB_TEST_NAME;
+  let collectionName = COLLECTION_TEST_NAME
 
   try {
-    // for the first timer users, check if the database exists? 
-    // let isDbExist = await dbClientClass.doesDbExist(databaseName);
-    // console.log("IS DB EXST? ? ....... ", isDbExist);
-    // let db = dbClientClass.getDatabase(databaseName); // will create if not exists.
-    // console.log("Created and got the db: ", db);
-    let collection = dbClientClass.getCollection(databaseName, COLLECTION_TEST_NAME); // this will build db and collection if not exists.
-    // console.log("Created Collection: ", collection);
-    dbClientClass.checkIfDataInCol(collection, metaData);
-
+    let collection = dbClientClass.getCollection(databaseName, collectionName); // this will build db and collection if not exists.
     let dataInCol = await dbClientClass.checkIfDataInCol(collection, metaData);
     
     if (dataInCol) {

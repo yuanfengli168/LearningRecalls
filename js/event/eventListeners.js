@@ -337,7 +337,7 @@ class EventListeners {
     async takeActionsInDB(db, data) {
         switch (this.currentPage) {
             case "Create Play Ground": 
-            
+
                 const metaDataObj = {
                     userID: ROOT_USER_ID,
                     date: data.date,
@@ -369,6 +369,16 @@ class EventListeners {
                 // console.log("metaDataObj: ", metaDataObj);
                 // let suc3 = await db.uploadVideoMetaDataToDB(metaDataObj);
 
+                console.log("suc1: ", suc1);
+                console.log("suc2: ", suc2);
+                console.log("suc3: ", suc3);
+
+                if (suc1 && suc2 && suc3) {
+                    alert("All successed!!!");
+                }
+                else {
+                    alert("Something wrong!!!");
+                }
 
                 return suc1 && suc2 && suc3;
         }

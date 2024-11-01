@@ -259,9 +259,11 @@ class MongoDBAtlas {
         })
 
       if (response.ok) {
-        alert("HTML created success!");
+        // alert("HTML created success!");
+        return true;
       } else {
-        alert('HTML Failed!');
+        // alert('HTML Failed!');
+        return false;
       }
     }
     catch(e) {
@@ -284,11 +286,13 @@ class MongoDBAtlas {
       //   return true;
       // }
       // return false;
-      if (response === "inserted") {
+      let reply = await response.json();
+      console.log("REPLY: ", reply);
+      if (reply === "inserted") {
         console.log("uploadvideoMetaData: ", true);
         return true;
       } 
-      else if (response === "existed") {
+      else if (reply === "existed") {
         console.log("uploadvideoMetaData: ", "existed");
         return true;
       }
