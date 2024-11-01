@@ -12,8 +12,8 @@ class MongoDBAtlas {
   async getAllQuiz() {
     try {
       const response = await fetch('http://localhost:5001/api/quizs', {
-                          method: 'GET',
-                       })
+        method: 'GET',
+      })
       if (!response.ok) {
         throw new Error('Network response was not ok ' + response.statusText);
       }
@@ -21,7 +21,7 @@ class MongoDBAtlas {
       const data = await response.json(); // data is in object format.
 
       return data;
-    } 
+    }
     catch (e) {
       console.error(e);
     }
@@ -39,9 +39,9 @@ class MongoDBAtlas {
       let content = data[date][tag];
       let quizContent = content.quizContent;
       let answerContent = content.quizAnswerContent;
-      
+
       return [quizContent, answerContent];
-    } 
+    }
     catch (e) {
       console.error(e);
     }
@@ -64,7 +64,7 @@ class MongoDBAtlas {
     try {
       // Fetch data from the API
       // const response = await fetch('http://localhost:5001/api/data');
-      
+
       const response = await fetch('http://localhost:5001/api/data', {
         method: 'PUT',
         headers: {
@@ -94,7 +94,7 @@ class MongoDBAtlas {
       } else {
         console.error("element not found");
       }
-      
+
 
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -116,11 +116,11 @@ class MongoDBAtlas {
    */
   async postScore(date, type, finishedDateTime, score, userID, tag) {
     const obj = {
-          userID: userID,
-          tag: tag,
-          date: date,
-          finishedDateTime: finishedDateTime,
-          score: score
+      userID: userID,
+      tag: tag,
+      date: date,
+      finishedDateTime: finishedDateTime,
+      score: score
     };
 
     try {
@@ -138,7 +138,7 @@ class MongoDBAtlas {
       else {
         return true;
       }
-    } 
+    }
     catch (e) {
       console.error(e);
       return false;
@@ -147,21 +147,21 @@ class MongoDBAtlas {
 
   // return array of string format of tags
   async getAllTags(userID, date) {
-    try{
+    try {
       let response;
 
       if (!date) {
         date = "none"
         response = await fetch(`http://localhost:5001/api/all-tags?userID=${userID}`, {
-          method: "GET",  
+          method: "GET",
           headers: {
             'Content-Type': 'application/json'
           },
         });
-      } 
+      }
       else {
         response = await fetch(`http://localhost:5001/api/today-tags?userID=${userID}&date=${date}`, {
-          method: "GET",  
+          method: "GET",
           headers: {
             'Content-Type': 'application/json'
           },
@@ -217,25 +217,25 @@ class MongoDBAtlas {
     //     formData.append('video', fileInput.files[0]);
     //     console.log("FormData: ", formData);
 
-      try {
-          const response = await fetch('http://localhost:5001/upload', {
-          method: 'POST',
-          body: formData,
-          });
+    try {
+      const response = await fetch('http://localhost:5001/upload', {
+        method: 'POST',
+        body: formData,
+      });
 
 
-          if (response.ok) {
-            // alert('Video uploaded successfully!');
-            return true;
-          } else {
-            // alert('Failed to upload video.');
-            return false;
-          }
-      } catch (error) {
-          console.error('Error:', error);
-          // alert('An error occurred.');
-          return null;
+      if (response.ok) {
+        // alert('Video uploaded successfully!');
+        return true;
+      } else {
+        // alert('Failed to upload video.');
+        return false;
       }
+    } catch (error) {
+      console.error('Error:', error);
+      // alert('An error occurred.');
+      return null;
+    }
   }
 
 
@@ -254,9 +254,9 @@ class MongoDBAtlas {
       })
 
       console.log("DATA: ", {
-          videoHTML: dataObj.videoHTML,
-          videoHTMLPath: dataObj.videoHTMLPagePath
-        })
+        videoHTML: dataObj.videoHTML,
+        videoHTMLPath: dataObj.videoHTMLPagePath
+      })
 
       if (response.ok) {
         // alert("HTML created success!");
@@ -266,7 +266,7 @@ class MongoDBAtlas {
         return false;
       }
     }
-    catch(e) {
+    catch (e) {
       console.error(e);
     }
   }
@@ -277,7 +277,7 @@ class MongoDBAtlas {
       const response = await fetch("http://localhost:5001/api/playground/post-metadata", {
         method: "POST",
         headers: {
-          'Content-Type' : 'application/json',
+          'Content-Type': 'application/json',
         },
         body: this.transferObjToJSON(data),
       })
@@ -291,7 +291,7 @@ class MongoDBAtlas {
       if (reply === "inserted") {
         console.log("uploadvideoMetaData: ", true);
         return true;
-      } 
+      }
       else if (reply === "existed") {
         console.log("uploadvideoMetaData: ", "existed");
         return true;
@@ -300,11 +300,36 @@ class MongoDBAtlas {
         return false;
       }
 
-      
+
     }
     catch (e) {
       console.error(e);
       return false;
+    }
+  }
+
+  // get history from SERVER: 
+  async getPlayGroundHistory(userID = ROOT_USER_ID) {
+    try {
+      const response = await fetch(`http://localhost:5001/api/playground/get-all-history?userID=${userID}`, {
+        method: "GET",
+        headers: {
+          'Content-type': 'application/json'
+        }
+      })
+
+      if (response.ok) {
+        let result = await response.json();
+        // console.log("RESULT: ", result);
+        return result;
+      }
+      else {
+        return [];
+      }
+    }
+    catch (e) {
+      console.error(e);
+      return ['error occured'];
     }
   }
 

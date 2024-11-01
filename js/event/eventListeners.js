@@ -343,7 +343,7 @@ class EventListeners {
                     date: data.date,
                     title: data.title,
                     desc: data.desc,
-                    videoPath: data.videoPath,
+                    videoHTMLPagePath: data.videoHTMLPagePath,
                 }
                 console.log("metaDataObj: ", metaDataObj);
                 let suc3 = await db.uploadVideoMetaDataToDB(metaDataObj);
@@ -358,20 +358,6 @@ class EventListeners {
                     videoHTMLPagePath: data.videoHTMLPagePath,
                 }
                 let suc2 = await db.uploadVideoHTML(dataObj);
-
-                // const metaDataObj = {
-                //     userID: ROOT_USER_ID,
-                //     date: data.date,
-                //     title: data.title,
-                //     desc: data.desc,
-                //     videoPath: data.videoPath,
-                // }
-                // console.log("metaDataObj: ", metaDataObj);
-                // let suc3 = await db.uploadVideoMetaDataToDB(metaDataObj);
-
-                console.log("suc1: ", suc1);
-                console.log("suc2: ", suc2);
-                console.log("suc3: ", suc3);
 
                 if (suc1 && suc2 && suc3) {
                     alert("All successed!!!");

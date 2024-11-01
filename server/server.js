@@ -76,7 +76,7 @@ class DBClient {
   getCollection(dbName, collectionName) {
     return this.getDatabase(dbName).collection(collectionName);
   }
-  
+
   // check if data exists in the collection?
   async checkIfDataInCol(collection, data) {
     return await collection.findOne(data);
@@ -390,17 +390,48 @@ app.post('/api/playground/post-metadata', async (req, res) => {
   try {
     let collection = dbClientClass.getCollection(databaseName, collectionName); // this will build db and collection if not exists.
     let dataInCol = await dbClientClass.checkIfDataInCol(collection, metaData);
-    
+
     if (dataInCol) {
       res.json("existed");
       res.send("existed!!");
     }
     else {
+      metaData = {
+        ...metaData,
+        logs: [],
+      }
       await collection.insertOne(metaData);
       res.json("inserted");
       res.send("inserted!!!")
     }
-    
+
+  }
+  catch (e) {
+    // TODO: 
+    // Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+    // let's fix this in version 1.x.x
+    console.error(e);
+  }
+})
+
+app.get('/api/playground/get-all-history', async (req, res) => {
+  const query = req.query;
+  const userID = +query.userID;
+
+  // database name and collection name are hardcoded
+  const dbName = DB_TEST_NAME;
+  const collectionName = COLLECTION_TEST_NAME;
+
+  try {
+    const dbQuery = { userID: userID };
+    const collection = dbClientClass.getCollection(dbName, collectionName);
+    const documents = await collection.find(dbQuery).toArray();
+
+    // // express deprecated res.send(status, body): 
+    // // Use res.status(status).send(body) instead server.js:430:9
+    // res.send("documents: ", documents);
+    // res.status(200).send("documents: ", documents);
+    res.json(documents);
   }
   catch (e) {
     console.error(e);

@@ -2,35 +2,89 @@ class PlayGroundHistoryPage extends CreationPage {
 
     constructor(number) {
         super(number);
-        this.arrayOfObj = this.getHistory();
+        this.db = new MongoDBAtlas();
+        // // you can't call async in constructor it will return 
+        // // promises only
+        // this.arrayOfObj = this.getHistory();
+        this.arrayOfObj = null;
         this.historyIdx;
     }
 
     // get history of obj in data form from backend database
-    getHistory() {
+    async getHistory() {
         // for testing purposes!!
-        return mockPlayGroundHistory;
+        // return mockPlayGroundHistory;
+
+        const result = await this.db.getPlayGroundHistory();
+        this.arrayOfObj = result;
+
+        console.log("THIS. arrayOfObj: ", this.arrayOfObj);
+        
+        return result;
     }
 
     // create the whole html tabs and return
-    createHistoryHTML() {
-        return createPlayGroundCards(this.arrayOfObj);
+    async createHistoryHTML() {
+        // return this.getHistory().then((result) => {
+        //     console.log("Result: ", result);
+        //     this.arrayOfObj = result;
+        //     let content = createPlayGroundCards(result);
+        //     console.log("CONTENT: ", content);
+        //     // return createPlayGroundCards(result);
+        //     return content;
+        // }).catch((error) => {
+        //     console.error("Result Error: ", error);
+        // })
+
+        // return "hahhahaha";
+        const result = await this.getHistory();
+        console.log("RESULT-: ", result);
+
+        const html = createPlayGroundCards(result);
+        console.log("HTML: ", html);
+
+        return html;
     }
 
-    // build the histroy tabs and put it into this.array
-    buildHistoryTabs(historyIdx) {
-        let tabsHTML = this.createHistoryHTML();
+    // // build the histroy tabs and put it into this.array
+    // // modify this to an separate function, do not return!
+    // // call it in index.js
+    // buildHistoryTabs(historyIdx) {
+    //     let tabsHTML = this.createHistoryHTML();
+    //     console.log("TABS-HTML: ", tabsHTML);
 
-        this.array[historyIdx] = tabsHTML;
+    //     this.array[historyIdx] = tabsHTML;
+    //     // this.array[historyIdx] = "lkajlkjlkj"
+
+
+    //     return tabsHTML;
+    // }
+
+    // will be a separate things, and build wholepage w
+    // will go first!!
+    async buildHistoryTabs(historyIdx) {
+        let tabsHTML = await this.createHistoryHTML();
+        console.log("TABS-HTML: ", tabsHTML);
+
+        // this.array[historyIdx] = tabsHTML;
         // this.array[historyIdx] = "lkajlkjlkj"
-        return tabsHTML;
+        let parent = document.querySelectorAll(`div.contents div.skeleton div.section`)[historyIdx - 1];
+
+        parent.innerHTML = tabsHTML;
+        // return tabsHTML;
+        this.addEventListeners();
     }
 
     
 
+    // buildWholePage({historyIdx}) {
+    //     this.historyIdx = historyIdx;
+    //     // this.buildHistoryTabs(historyIdx);
+    //     return this.buildSkeleton();
+    // }
+
     buildWholePage({historyIdx}) {
-        this.historyIdx = historyIdx;
-        this.buildHistoryTabs(historyIdx);
+        this.historyIdx = this.historyIdx;
         return this.buildSkeleton();
     }
 
@@ -44,11 +98,14 @@ class PlayGroundHistoryPage extends CreationPage {
     addEventListenerOfPlay() {
         let playButtonElements = document.querySelectorAll(".contents .quiz .playground-item .playground-cards .take");
         playButtonElements.forEach((button, index) => button.addEventListener("click", () => {
+            console.log("THIS arrayOFOBJ: ", this.arrayOfObj);
+
+
             let contents = document.querySelector(".contents");
             contents.innerHTML = '';
             
-            let videoPath = this.arrayOfObj[index].videoPath;
-            let pG = returnPlayGround(videoPath);
+            let videoHTMLPagePath = this.arrayOfObj[index].videoHTMLPagePath;
+            let pG = returnPlayGround(videoHTMLPagePath);
             contents.innerHTML = pG;
 
             this.addEventListenerOfReturn();
@@ -85,7 +142,7 @@ class PlayGroundHistoryPage extends CreationPage {
 
     addEventListenerOfContinueWork(parentIndex, parent) {
         const childElements = parent.querySelectorAll("div.logs div.log-item button.codepen");
-        let videoPath = this.arrayOfObj[parentIndex].videoPath;
+        let videoHTMLPagePath = this.arrayOfObj[parentIndex].videoHTMLPagePath;
         let logs = this.arrayOfObj[parentIndex].logs;
         let contents = document.querySelector(".contents");
 
@@ -95,7 +152,7 @@ class PlayGroundHistoryPage extends CreationPage {
                 console.log("codePenPath: ", codePenPath);
                 
                 contents.innerHTML = '';
-                let pG = returnPlayGround(videoPath, codePenPath);
+                let pG = returnPlayGround(videoHTMLPagePath, codePenPath);
                 contents.innerHTML = pG;
 
                 this.addEventListenerOfReturn();
@@ -113,8 +170,9 @@ class PlayGroundHistoryPage extends CreationPage {
             
             let pG = this.buildWholePage({historyIdx: 2});
             contents.innerHTML = pG;
+            this.buildHistoryTabs(2);
 
-            this.addEventListeners();
+            // this.addEventListeners();
         })
 
         
@@ -122,7 +180,7 @@ class PlayGroundHistoryPage extends CreationPage {
 
     // create the log part for the divs.
     createLogs(arrayOfLogs) {
-        if (!arrayOfLogs) {
+        if (!arrayOfLogs || arrayOfLogs.length < 1) {
             return "No logs so far!!!!";
         }
 

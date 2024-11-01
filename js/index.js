@@ -104,8 +104,14 @@ function renderPage() {
             break;
         case "Play Ground History": 
             const pghp = new PlayGroundHistoryPage(4);
-            initialDoms.contents.innerHTML = pghp.buildWholePage({historyIdx : 2});
-            pghp.addEventListeners();
+            // initialDoms.contents.innerHTML = pghp.buildWholePage({historyIdx : 2});
+
+            initialDoms.contents.innerHTML = pghp.buildWholePage({historyIdx: 2})
+            pghp.buildHistoryTabs(2); // 2 should be constant with the above line historyIdx.
+            // let a = pghp.buildWholePage({historyIdx : 2});
+            // console.log("AAA: ", a);
+
+            // pghp.addEventListeners();
             break;
 
     }
