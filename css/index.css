@@ -4,7 +4,7 @@
 }
 
 body {
-    background-color: #FFFFFF;
+    background-color: #e3c6b0;
     text-align: center;
 }
 
@@ -126,6 +126,8 @@ div .tags {
     display: flex;
     justify-content: wrap;
     align-items: left;
+    /* width: 65vw; */
+    /* overflow-x: auto; */
 
     .input {
         width: 16vw;
@@ -134,7 +136,6 @@ div .tags {
 
     .history .tabs {
         width: 65vw;
-
         padding: 0;
         margin: 0;
         font-size: 14px;
@@ -143,13 +144,17 @@ div .tags {
         justify-content: start;
         /* overflow: scroll; */
         overflow-x: auto;
+        overflow-y: hidden;
 
         p {
+            height: 14px;
+            width: 100px;
             margin-right: 8px;
             border: 1px solid;
             border-radius: 5px;
             padding: 4px;
             background-color: rgb(217, 217, 217);
+            word-break: keep-all;
         }
         
     }
@@ -190,7 +195,7 @@ div .dailyQuizCreation .buttons {
 .quiz-cards {
     background-color: lightgray;
     border-radius: 5px;
-    width: 85%;
+    /* width: 85%; */
     height: 80px;
     overflow: hidden;
     display: flex;
@@ -248,12 +253,13 @@ div .quiz-item {
 
 .quiz {
     padding-left: 8px;
-    overflow-y: scroll;
+    padding-right: 8px;
+    overflow-y: auto;
     margin: 16px 0;
 }
 
 .todayTaskContainer .quiz {
-    background-color: orange;
+    background-color: #BF9d9d;
 }
 
 .QuizHistoryContainer .quiz {

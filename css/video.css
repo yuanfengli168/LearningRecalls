@@ -1,0 +1,14 @@
+@import "reset.css";
+
+video.playground {
+    height: 80vh;
+    width: auto;
+    margin: 10vh 0;
+}
+
+.video-container {
+    height: 100vh;
+    background-color: #ccc;
+    text-align: center;
+    
+}

@@ -1,0 +1,26 @@
+.contents .skeleton .section {
+    margin: 32px 0;
+}
+
+.contents .skeleton .section .buttons{
+    display: flex;
+    justify-content: space-between;
+}
+
+.contents .quiz .playground-item .playground-cards button.logs.active {
+    background-color: darkgray;
+}
+
+.contents .quiz .playground-item div.logs {
+    padding-top: 8px;
+    background-color: lightcyan;
+}
+
+.contents .quiz .playground-item div.logs div.log-item {
+    margin: 8px 0;
+    background-color: lightgray;
+}
+
+.contents .quiz .playground-item div.logs div.log-item:first-child {
+    margin: 0;
+}

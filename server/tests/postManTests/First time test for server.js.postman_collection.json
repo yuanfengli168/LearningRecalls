@@ -1,0 +1,288 @@
+{
+	"info": {
+		"_postman_id": "fc95f516-3543-4364-9b16-84df12dfbe82",
+		"name": "First time test for server.js",
+		"description": "# Introduction\nWhat does your API do?\nfirst time, only testing to see if the server is working or not.\n\n# Overview\nThings that the developers should know about\nI dont' know anything, please take a look at chatgpt: \nhttps://chatgpt.com/share/66eb527e-8e1c-800a-8ba1-c6b2a900407b\n\n# Authentication\nWhat is the preferred way of using the API?\nTBD\n\n# Error Codes\nWhat errors and status codes can a user expect?\nI forgot to write '/' before 'api/data' so it was not working as expected.\n\n# Rate limit\nIs there a limit to the number of requests a user can send?\nTBD",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "23437524"
+	},
+	"item": [
+		{
+			"name": "playing2-http://localhost:5001/api/data",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"userID\": 1002,\n    \"data\": \"I am data\",\n    \"object\": {\"a\": 1, \"b\": 2}\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5001/api/data",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5001",
+					"path": [
+						"api",
+						"data"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Default",
+					"originalRequest": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:5001/api/data",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"api",
+								"data"
+							]
+						}
+					},
+					"_postman_previewlanguage": null,
+					"header": null,
+					"cookie": [],
+					"body": null
+				}
+			]
+		},
+		{
+			"name": "http://postman-echo.com/get",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://postman-echo.com/get",
+					"protocol": "http",
+					"host": [
+						"postman-echo",
+						"com"
+					],
+					"path": [
+						"get"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:5001/api/data-2",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": " {\"userID\":1005,\"date\":\"2024-08-11\",\"quizTags\":\"2\",\"quizContent\":\"1111-corrected version\",\"quizAnswerContent\":\"2222\",\"hasFinished\":false,\"results\":[]}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5001/api/data",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5001",
+					"path": [
+						"api",
+						"data"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:5001/api/quizs",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"userID\" : 1001\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5001/api/quizs",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5001",
+					"path": [
+						"api",
+						"quizs"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "playground post metadata",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": " {\n    \"userID\":1005,\n    \"date\":\"2024-09-20\",\n    \"tag\":\"2\",\n    \"finishedDateTime\": \"2024-09-20 20:07:03\",\n    \"score\": 5    \n }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5001/api/playground/post-metadata",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5001",
+					"path": [
+						"api",
+						"playground",
+						"post-metadata"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:5001/api/all-tags",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5001/api/all-tags?userID=1001",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5001",
+					"path": [
+						"api",
+						"all-tags"
+					],
+					"query": [
+						{
+							"key": "userID",
+							"value": "1001"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:5001/api/today-tags",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5001/api/today-tags?userID=1001&date=2024-09-24",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5001",
+					"path": [
+						"api",
+						"today-tags"
+					],
+					"query": [
+						{
+							"key": "userID",
+							"value": "1001"
+						},
+						{
+							"key": "date",
+							"value": "2024-09-24"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "playground post metadata",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": " {\n    \"userID\":1005,\n    \"date\":\"2024-09-20\",\n    \"tag\":\"2\",\n    \"finishedDateTime\": \"2024-09-20 20:07:03\",\n    \"score\": 5    \n }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5001/api/playground/post-metadata",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5001",
+					"path": [
+						"api",
+						"playground",
+						"post-metadata"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

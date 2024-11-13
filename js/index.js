@@ -1,3 +1,5 @@
+// import PlayGroundCreationPage from "./components/playGroundCreationPage.js";
+
 const ROOT_USER_ID = 1001;
 var dataArray = [];
 
@@ -5,6 +7,9 @@ const contentType = Object.freeze({
     todayTask: "Today Task",
     dailyQuizCreation: "Daily Quiz Creation",
     quizHistory: "Quiz History",
+    playGround: "Play Ground",
+    createPlayGround: "Create Play Ground",
+    playGroundHistory: "Play Ground History",
 })
 
 const initialDoms = {
@@ -38,6 +43,15 @@ function findContent() {
         case "quizHistory":
             resultContentType = contentType.quizHistory;
             break;
+        case "newPlayground":
+            resultContentType = contentType.playGround;
+            break;
+        case "createPlayground":
+            resultContentType = contentType.createPlayGround;
+            break;
+        case "playgroundHistory":
+            resultContentType = contentType.playGroundHistory;
+            break;
     }
 
     // default we are on Daily Quiz Creation.
@@ -48,7 +62,6 @@ function findContent() {
 
 function renderPage() {
     var contentType = findContent();
-    var contentHTML = null;
 
     switch (contentType) {
         // case contentType.todayTask: 
@@ -77,8 +90,99 @@ function renderPage() {
             filters.renderFilters(filters.tag, filters.order, "history");
             showPreviousQuizs(true, filters.tag, filters.order);
             break;
+        case "Play Ground":
+            initialDoms.contents.innerHTML = returnPlayGround();
+            break;
+        case "Create Play Ground":
+            const pgcp = new PlayGroundCreationPage();
+            let innerHTML = pgcp.buildWholePage({
+                dateIndex: 1, titleIndex: 2,
+                descIndex: 3, videoIndex: 4, buttonIndex: 5
+            });
+            initialDoms.contents.innerHTML = innerHTML;
+            pgcp.addEventListeners();
+            break;
+        case "Play Ground History": 
+            const pghp = new PlayGroundHistoryPage(4);
+            // initialDoms.contents.innerHTML = pghp.buildWholePage({historyIdx : 2});
+
+            initialDoms.contents.innerHTML = pghp.buildWholePage({historyIdx: 2})
+            pghp.buildHistoryTabs(2); // 2 should be constant with the above line historyIdx.
+            // let a = pghp.buildWholePage({historyIdx : 2});
+            // console.log("AAA: ", a);
+
+            // pghp.addEventListeners();
+            break;
+
     }
 }
+
+// 
+function returnPlayGround(videoPath, codePenPath = "https://codepen.io/pen/", metaDataObj) {
+    if (codePenPath == "") {
+        codePenPath = "https://codepen.io/pen/";
+    }
+
+    let banner;
+    let disabled;
+    let aTagOfVideo;
+    let display;
+    if (!metaDataObj) {
+        banner = `Welcome to playground!!!!`;
+        disabled = "disabled";
+        aTagOfVideo = "Open video"
+        display = "none";
+    }
+    else {
+        banner = `Created Date: ${metaDataObj.date}; Title: ${metaDataObj.title}; Desc: ${metaDataObj.desc}`; 
+        disabled = "";
+        aTagOfVideo = `<a href="${videoPath}" target="_blank">Open video</a>`
+        display: "static";
+    }
+    
+    
+
+    // return html: 
+    const strOfhtml = `
+        <div class="playgroundContainer">
+            <div class="sub-header clearfix">
+                <p> ${banner} </p>
+
+                <div class="buttons" style="display: ${display}">
+                    <button class="video" ${disabled}>${aTagOfVideo}</button>
+                    
+                    
+                    <span class="github-link">
+                        <button disabled class="save-to-gist">Save Github link here</button>
+                        <input type="text" name="" id="">
+                    </span>
+
+                    <span class="share-link">
+                        <button disabled class="save-to-gist">Save Sharing link here </button>
+                        <input type="text" name="" id="">
+                    </span>
+
+                    <span class="score">
+                        Score:
+                        <input type="text">
+                    </span>
+
+                    <button class="save-all" style="background: lightblue;">save both link</button>
+
+                    <button class="return" style="background: beige">return</button>
+                    <span id="playground-indicator"></span>
+                    
+                    
+                </div>
+            </div>
+            <iframe class="codepen" src=${codePenPath} frameborder="0"></iframe>
+        </div>
+
+    `
+    return strOfhtml;
+}
+
+
 
 async function renderAllTags() {
     // get the data from backend
@@ -151,10 +255,17 @@ function needsReview(quiz) {
 
     const diffDays = (new Date(todayDate).getTime() - new Date(quizDate).getTime()) / (1000 * 3600 * 24);
 
-    if ((quiz.results.length === 0 && diffDays !== 0) || 
-        [1,7,14,28,56].includes(diffDays) && Array.from(quiz.results).at(-1).finishedDateTime.split(" ")[0] !== todayDate) {
-            return true;    
+    // // This implementation valid until Oct.30. 
+    // if ((quiz.results.length === 0 && diffDays !== 0) ||
+    //     [1, 7, 14, 28, 56].includes(diffDays) && Array.from(quiz.results).at(-1).finishedDateTime.split(" ")[0] !== todayDate) {
+    //     return true;
+    // }
+
+    if ((quiz.results.length === 0 && diffDays !== 0) ||
+        [7, 28].includes(diffDays) && Array.from(quiz.results).at(-1).finishedDateTime.split(" ")[0] !== todayDate) {
+        return true;
     }
+    
     else return false;
 }
 
@@ -179,17 +290,17 @@ async function showPreviousQuizs(showAll, tagValue, orderValue) {
 
         // get all quiz that has not been finished.
         // get quiz that is 7 days ago, or one month ago, or two month ago
-        
+
         if (tagValue && tagValue !== "") {
             previousQuizArray = previousQuizArray.filter(quiz => quiz.tag === tagValue);
             changed = true;
         }
-        
+
         // bug1, please see the typeof case, I was struggling because 2 !== "2"; type is different.
         // bug2, the order must all have new in front of the Date(), new was missing
         if (orderValue && orderValue > 1) {
 
-            switch(parseInt(orderValue)) {
+            switch (parseInt(orderValue)) {
                 // non-chronological:
                 case 2:
                     previousQuizArray.sort((a, b) => new Date(b.date) - new Date(a.date));
@@ -200,20 +311,20 @@ async function showPreviousQuizs(showAll, tagValue, orderValue) {
                     previousQuizArray.sort((a, b) => new Date(a.date) - new Date(b.date));
                     // console.log("previousQuizArray: ", previousQuizArray);
                     break;
-                default: 
+                default:
                     // console.log("the order value is not valid");
                     break;
             }
             changed = true;
         }
-        
+
         if (showAll === false) {
             // previousQuizArray = previousQuizArray.filter(quiz => quiz.results.length === 0);
             previousQuizArray = previousQuizArray.filter(quiz => needsReview(quiz));
             // console.log("!showAll");
-        } 
+        }
         if (showAll === true && changed === false) {
-            previousQuizArray.sort((a, b) => new Date(b.date) -  new Date(a.date));
+            previousQuizArray.sort((a, b) => new Date(b.date) - new Date(a.date));
             // console.log("showAll");
         }
 
@@ -317,7 +428,7 @@ function renderLogsOfIndex(idx, previousQuizArray, isHidden, parent) {
     if (!parent) {
         parent = document.querySelector(`.card-logs-${idx}`);
     }
-    
+
     parent.innerHTML = element;
 
 
@@ -329,7 +440,7 @@ function renderLogsOfIndex(idx, previousQuizArray, isHidden, parent) {
         // let idx = index;
         button.addEventListener('click', function () {
             // button.classList.remove("hide");
-            console.log("index, clicked: ", index)
+            // console.log("index, clicked: ", index)
             renderPage();
         })
     })
@@ -459,11 +570,11 @@ function getCurrentTime() {
     return `${hours}:${minutes}:${seconds}`;
 }
 
-function getCurrentDateAndTime() {
+function getCurrentDateAndTime(connector = " ") {
     let date = getTodayDate();
     let time = getCurrentTime();
 
-    return date + " " + time;
+    return date + connector + time;
 }
 
 function renderQuizOfIndex(index, previousQuizArray) {
@@ -719,12 +830,19 @@ function addSaveButtonEventListener() {
 
         const mongoDbAtlas = new MongoDBAtlas(dataBaseObj);
         mongoDbAtlas.saveToDatabase();
+
+        // TODO: 
+        // not waiting for the saveTODatabase finish 
+        // because can't add await before the above line
+        // quickfix: add setTimeOut
+        // renderTodayTags();
+        setTimeout(() => renderTodayTags(), 1000);
     })
 }
 
 function addEventListenerOfResetButton() {
     document.querySelector("button#reset").addEventListener('click', function () {
-        console.log("reset pressed!!");
+        // console.log("reset pressed!!");
         resetInputs();
     })
 }
