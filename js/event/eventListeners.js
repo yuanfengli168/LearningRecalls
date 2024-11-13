@@ -65,7 +65,6 @@ class EventListeners {
         let isRequestInProgress = false;
 
         button.addEventListener('click', () => {
-            // console.log("isRequestInProgress? ", isRequestInProgress);
             if (isRequestInProgress) return;
             isRequestInProgress = true;
 
@@ -109,70 +108,31 @@ class EventListeners {
     addEventListenerOfUploadButton(button) {
         var doms = this.doms;
 
-        // button.addEventListener('submit', function(event) {
-        //     // do not refresh the page!!
-        //     event.preventDefault();
-        // })
-
-        // let form = document.querySelector("#uploadForm");
-        // form.addEventListener("submit", function(event) {
-        //     console.log("RRRRRR")
-        //     event.preventDefault();
-        // })
-
         button.addEventListener('click', async function(event) {
-            // event.preventDefault();
-
             const fileInput = document.getElementById('videoFile');
             const formData = new FormData();
             formData.append('video', fileInput.files[0]);
-            // console.log("FormData: ", formData);
 
             const db = new MongoDBAtlas();
             let res = await db.uploadVideo(formData);
-            // console.log("RES: ", res);
 
+            const textContent = doms.indicatorSpanElement.textContent;
+            const bgColor = doms.indicatorSpanElement.style.backgroundColor;
             if (fileInput.files[0] && res === false) {
-                doms.indicatorSpanElement.textContent = "Failed to Upload";
-                doms.indicatorSpanElement.style.backgroundColor = "red";
+                textContent = "Failed to Upload";
+                bgColor = "red";
             }
 
             if (res === true) {
-                doms.indicatorSpanElement.textContent = "Successed to Upload";
-                doms.indicatorSpanElement.style.backgroundColor = "green";
+                textContent = "Successed to Upload";
+                bgColor = "green";
             }
 
             if (res === null) {
-                doms.indicatorSpanElement.textContent = "Errors happend";
-                doms.indicatorSpanElement.style.backgroundColor = "grey";
+                textContent = "Errors happend";
+                bgColor = "grey";
             }
-
-            // console.log("Reload still not happenning!!!");
-
-            // try {
-            //     const response = await fetch('http://localhost:5001/upload', {
-            //     method: 'POST',
-            //     body: formData,
-            //     });
-
-            //     let spanElement = this.doms.span;
-            //     if (response.ok) {
-            //         // alert('Video uploaded successfully!');
-
-            //     } else {
-            //         alert('Failed to upload video.');
-            //     }
-            // } catch (error) {
-            //     console.error('Error:', error);
-            //     alert('An error occurred.');
-            // }
         })
-
-        // let form = document.querySelector("#uploadForm");
-        // form.addEventListener("submit", function(event) {
-        //     console.log("RRRRRR")
-        //     event.preventDefault();
-        // })
     }
 
 

@@ -18,8 +18,6 @@ class PlayGroundHistoryPage extends CreationPage {
         const result = await this.db.getPlayGroundHistory();
         this.arrayOfObj = result;
 
-        console.log("THIS. arrayOfObj: ", this.arrayOfObj);
-
         return result;
     }
 
@@ -38,10 +36,8 @@ class PlayGroundHistoryPage extends CreationPage {
 
         // return "hahhahaha";
         const result = await this.getHistory();
-        console.log("RESULT-: ", result);
 
         const html = createPlayGroundCards(result);
-        console.log("HTML: ", html);
 
         return html;
     }
@@ -64,7 +60,6 @@ class PlayGroundHistoryPage extends CreationPage {
     // will go first!!
     async buildHistoryTabs(historyIdx) {
         let tabsHTML = await this.createHistoryHTML();
-        console.log("TABS-HTML: ", tabsHTML);
 
         // this.array[historyIdx] = tabsHTML;
         // this.array[historyIdx] = "lkajlkjlkj"

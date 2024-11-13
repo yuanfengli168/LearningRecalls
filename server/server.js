@@ -339,7 +339,9 @@ const storage = multer.diskStorage({
     cb(null, path.join(__dirname, '/assets/video/'));
   },
   filename: (req, file, cb) => {
-    // Use the original filename, ensuring UTF-8 compatibility: 
+    // Use the original filename, ensuring UTF-8 compatibility: (this was a bug, see below comments.)
+    // this is an old bug that multer has, The version I used for this line of multer: multer": "^1.4.5-lts.1",
+    // so you have to write like this, 'latin1' must be added or utf-8 won't work, I spend 1 hr working on this.
     file.originalname = Buffer.from(file.originalname, 'latin1').toString('utf-8');
     cb(null, file.originalname);
   }
@@ -349,13 +351,9 @@ const upload = multer({ storage });
 // Route to handle video uploads
 app.post('/upload', upload.single('video'), (req, res) => {
   if (req.file) {
-    // console.log("fileName: ", req.file);
-    // console.log("req.body: ", req.body);
     res.status(200).send('File uploaded successfully');
-    // return res.json(true);
   } else {
     res.status(400).send('Failed to upload file');
-    // return res.json(false);
   }
 });
 
@@ -363,15 +361,10 @@ app.post('/upload', upload.single('video'), (req, res) => {
 // Route to handle metadata of video uploads: 
 app.post('/uploadVideoMetaData', (req, res) => {
   let data = req.body;
-  console.log("DATA SERVER: ", data);
-
-
   const videoHTML = data.videoHTML;
   const videoHTMLPagePath = data.videoHTMLPagePath;
-  console.log("htmlName type: ", typeof videoHTML);
   // due to a little diff from server, deleting /server in str front
   const filePath = path.join(__dirname, videoHTMLPagePath.slice(7));
-  console.log("Video file Path: ", filePath);
 
   fs.writeFile(filePath, videoHTML, (err) => {
     if (err) {

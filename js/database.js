@@ -210,30 +210,19 @@ class MongoDBAtlas {
   // 2) if video not uploaded, we upload video and update the data base of playGround by clicking the 'save playground'
   // upload video to backend: 
   async uploadVideo(formData) {
-    // let button = document.querySelector("form#uploadForm button");
-    // button.addEventListener('click', async () => {
-    //     const fileInput = document.getElementById('videoFile');
-    //     const formData = new FormData();
-    //     formData.append('video', fileInput.files[0]);
-    //     console.log("FormData: ", formData);
-
     try {
       const response = await fetch('http://localhost:5001/upload', {
         method: 'POST',
         body: formData,
       });
 
-
       if (response.ok) {
-        // alert('Video uploaded successfully!');
         return true;
       } else {
-        // alert('Failed to upload video.');
         return false;
       }
     } catch (error) {
       console.error('Error:', error);
-      // alert('An error occurred.');
       return null;
     }
   }

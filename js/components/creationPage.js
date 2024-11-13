@@ -20,7 +20,6 @@ class CreationPage extends CreationPageInterface {
         let result = ``;
         for (let i = 1; i <= this.number; i++) {
             let content = this.array[i] === null ? "" : this.array[i];
-            console.log("This.array: ", this.array);
 
             let section = `
                 <div class="section ${i}">

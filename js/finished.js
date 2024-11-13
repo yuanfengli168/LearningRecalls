@@ -32,15 +32,7 @@ class Finished {
                 if (dateFinished === date) {
                     result.push(quiz);
                 }
-            }
-            // // bug: no need to have for here.
-            // for (let res of Array.from(results)) {
-            //     let finishedDateTime  = res.finishedDateTime;
-            //     let dateFinished = finishedDateTime.split(" ")[0];
-            //     if (dateFinished === date) {
-            //         result.push(quiz);
-            //     }
-            // }
+            }  
         }
 
         // it might still be duplicate:
@@ -59,12 +51,11 @@ class Finished {
     }
 
     // return an array that only should show for today's task:
+    // this works for all days: 
     shouldRenderForTodayTask(quiz) {
         const todayDate = getTodayDate();
         const quizDate = quiz.date;
-        // because result's first item is always the oldest time
-        // TODO: write new util fundion to get all infos, @date:10/11/2024
-        const quizLastResult = quiz.results[0];
+        const quizLastResult = quiz.results.at(-1);   // change to -1 works for all days; // change to 0 works for today only!!
         const quizLastResultDate = quizLastResult.finishedDateTime.split(" ")[0];
         const diffDays = (new Date(todayDate).getTime() - new Date(quizDate).getTime()) / (1000 * 3600 * 24);
         
@@ -74,6 +65,28 @@ class Finished {
         
         return false;
     }
+
+    // // return an array that only should show for today's task:
+    // // this works for today only
+    // shouldRenderForTodayTask(quiz) {
+    //     const todayDate = getTodayDate();
+    //     const quizDate = quiz.date;
+    //     // because result's first item is always the oldest time
+    //     // TODO: write new util fundion to get all infos, @date:10/11/2024
+    //     // This works for today's logic
+    //     const quizLastResult = quiz.results.at(0);
+    //     const quizLastResultDate = quizLastResult.finishedDateTime.split(" ")[0];
+    //     const diffDays = (new Date(todayDate).getTime() - new Date(quizDate).getTime()) / (1000 * 3600 * 24);
+        
+    //     // This works for today's logic
+    //     if ( [1,2,7,14,21,28,56].includes(diffDays) || quizLastResultDate === todayDate) {
+    //             console.log("quiz, ", quiz);
+    //             console.log("QLRD: ", quizLastResultDate, "; TodayD; ", todayDate);
+    //             return true;    
+    //     }
+        
+    //     return false;
+    // }
 
     // return array of quiz Card in html format in string type
     async createQuizCards(date) {

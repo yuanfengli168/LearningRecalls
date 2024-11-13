@@ -126,15 +126,18 @@ function returnPlayGround(videoPath, codePenPath = "https://codepen.io/pen/", me
     let banner;
     let disabled;
     let aTagOfVideo;
+    let display;
     if (!metaDataObj) {
         banner = `Welcome to playground!!!!`;
         disabled = "disabled";
         aTagOfVideo = "Open video"
+        display = "none";
     }
     else {
         banner = `Created Date: ${metaDataObj.date}; Title: ${metaDataObj.title}; Desc: ${metaDataObj.desc}`; 
         disabled = "";
         aTagOfVideo = `<a href="${videoPath}" target="_blank">Open video</a>`
+        display: "static";
     }
     
     
@@ -145,7 +148,7 @@ function returnPlayGround(videoPath, codePenPath = "https://codepen.io/pen/", me
             <div class="sub-header clearfix">
                 <p> ${banner} </p>
 
-                <div class="buttons">
+                <div class="buttons" style="display: ${display}">
                     <button class="video" ${disabled}>${aTagOfVideo}</button>
                     
                     
