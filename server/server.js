@@ -543,7 +543,21 @@ function sortMap(map) {
 }
 
 function createMapOfTags(data, mapOfTags) {
-  mapOfTags.set(data.quizTags, data);
+  // a bug was that if we save by the previous 
+  // prefill
+  // then the logs data would disappear. 
+  if (mapOfTags.has(data.quizTags)) {
+    let value = mapOfTags.get(data.quizTags);
+    value.quizContent = data.quizContent;
+    value.quizAnswerContent = data.quizAnswerContent;
+    console.log("Create existing map of tags: ", mapOfTags.toString())
+
+  } else {
+    mapOfTags.set(data.quizTags, data);
+    console.log("Create new map of tags: ", mapOfTags.toString())
+  }
+
+
   return mapOfTags;
 }
 

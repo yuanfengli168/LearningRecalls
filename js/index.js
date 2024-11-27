@@ -526,7 +526,6 @@ function returnDailyQuizCreation() {
 
             <div class="buttons">
                 <button id="save">Save Quiz and Answer</button>
-                <button disabled>Append to Same Tag Today</button>
                 <button id="reset">Reset quiz, answer, tag</button>
             </div>
 
