@@ -154,7 +154,10 @@ div .tags {
             border-radius: 5px;
             padding: 4px;
             background-color: rgb(217, 217, 217);
+            /* keep all language chars in same line */
             word-break: keep-all;
+            /* keep hyphen in the same line */
+            white-space: nowrap;
         }
         
     }
