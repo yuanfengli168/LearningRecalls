@@ -84,6 +84,7 @@ function renderPage() {
             addSaveButtonEventListener();
             addTagsEventListern();
             addEventListenerOfResetButton();
+            addEventListenerOfTabInTextBox();
             break;
         case "Quiz History":
             initialDoms.contents.innerHTML = returnQuizHistory();
@@ -102,11 +103,11 @@ function renderPage() {
             initialDoms.contents.innerHTML = innerHTML;
             pgcp.addEventListeners();
             break;
-        case "Play Ground History": 
+        case "Play Ground History":
             const pghp = new PlayGroundHistoryPage(4);
             // initialDoms.contents.innerHTML = pghp.buildWholePage({historyIdx : 2});
 
-            initialDoms.contents.innerHTML = pghp.buildWholePage({historyIdx: 2})
+            initialDoms.contents.innerHTML = pghp.buildWholePage({ historyIdx: 2 })
             pghp.buildHistoryTabs(2); // 2 should be constant with the above line historyIdx.
             // let a = pghp.buildWholePage({historyIdx : 2});
             // console.log("AAA: ", a);
@@ -134,13 +135,13 @@ function returnPlayGround(videoPath, codePenPath = "https://codepen.io/pen/", me
         display = "none";
     }
     else {
-        banner = `Created Date: ${metaDataObj.date}; Title: ${metaDataObj.title}; Desc: ${metaDataObj.desc}`; 
+        banner = `Created Date: ${metaDataObj.date}; Title: ${metaDataObj.title}; Desc: ${metaDataObj.desc}`;
         disabled = "";
         aTagOfVideo = `<a href="${videoPath}" target="_blank">Open video</a>`
         display: "static";
     }
-    
-    
+
+
 
     // return html: 
     const strOfhtml = `
@@ -265,7 +266,7 @@ function needsReview(quiz) {
         [7, 28].includes(diffDays) && Array.from(quiz.results).at(-1).finishedDateTime.split(" ")[0] !== todayDate) {
         return true;
     }
-    
+
     else return false;
 }
 
@@ -493,13 +494,13 @@ function returnDailyQuizCreation() {
                 <div class="creation">
                     <h4>Create Quiz:</h4>
                     <p>Write your quiz in the input box below:</p>
-                    <textArea required placeholder="Enter your content here:" rows="15" cols="50"></textArea>
+                    <textArea class="textbox" required placeholder="Enter your content here:" rows="15" cols="50"></textArea>
                 </div>
                 
                 <div class="answer">
                     <h4>Write Answers: </h4>
                     <p>Write down your answers: </p>
-                    <textArea placeholder="Enter your answers here:" rows="15" cols="50"></textArea>
+                    <textArea class="textbox" placeholder="Enter your answers here:" rows="15" cols="50"></textArea>
                 </div>
                 
             </div>
@@ -864,9 +865,42 @@ function addEventListenerOfResetDate() {
     })
 }
 
+// Add an event Listener to all pages: 
+function addEventListenerOfTabInTextBox() {
+    let textAreas = document.getElementsByClassName('textbox');
+    console.log("textAreas: ", textAreas, typeof textAreas);
 
+    /**
+     * Learned: 
+     * getElementsByClassName() return HTMLCollection, does not support forEach();
+     * querySelectorAll() return NodeList, does support forEach();
+     * 
+     * links: 
+     * 1. chatgpt: https://chatgpt.com/share/67521299-c300-800a-992b-bb5e22c7b2a7 
+     * 2. get..:   https://developer.mozilla.org/en-US/docs/Web/API/Document/getElementsByClassName 
+     * 3. query..: https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelectorAll 
+     */
+    for (var index = 0; index < textAreas.length; index++) {
+        let textArea = textAreas[index];
 
+        textArea.addEventListener('keydown', function (e) {
+            if (e.key == 'Tab') {
+                console.log("Tab clicked!")
+                e.preventDefault();
+                var start = this.selectionStart;
+                var end = this.selectionEnd;
 
+                // set textarea value to: text before caret + tab + text after caret
+                this.value = this.value.substring(0, start) +
+                    "\t" + this.value.substring(end);
+
+                // put caret at right position again
+                this.selectionStart =
+                    this.selectionEnd = start + 1;
+            }
+        });
+    };
+}
 
 // TODO: 
 // in next version, write in ES6 classes method!!

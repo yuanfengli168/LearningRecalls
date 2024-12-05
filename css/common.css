@@ -3,3 +3,7 @@
     display: block;
     clear: both;
 }
+
+textarea {
+    padding: 16px;
+}
