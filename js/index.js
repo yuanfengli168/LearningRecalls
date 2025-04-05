@@ -262,7 +262,7 @@ function needsReview(quiz) {
     //     return true;
     // }
 
-    if ((quiz.results.length === 0 && diffDays !== 0) ||
+    if ((quiz.results.length === 0 && diffDays !== 0 && diffDays > 0) ||
         [7, 28].includes(diffDays) && Array.from(quiz.results).at(-1).finishedDateTime.split(" ")[0] !== todayDate) {
         return true;
     }
@@ -552,6 +552,15 @@ function returnTodayTasks() {
             <div class="Exam">Last Month's Exam on First Week's Monday</div> 
             -->
         </div>
+        <!-- the following code can prevent
+             the <style> </style> in side any
+             description, by the attribute pre.
+        -->
+        <style>
+            * {
+                color: #000;
+            }
+        </style>
     `;
 }
 
@@ -604,7 +613,7 @@ function renderQuizOfIndex(index, previousQuizArray) {
                 </div>
                 
                 <div id="write_answer">
-                    <textarea placeholder="write your answer"></textarea>
+                    <textarea class="textbox" placeholder="write your answer"></textarea>
                 </div>
 
                 <div>
@@ -684,6 +693,8 @@ function renderQuizOfIndex(index, previousQuizArray) {
         function () {
             renderPage();
         })
+
+    addEventListenerOfTabInTextBox();
 }
 
 renderPage();
@@ -891,12 +902,23 @@ function addEventListenerOfTabInTextBox() {
                 var end = this.selectionEnd;
 
                 // set textarea value to: text before caret + tab + text after caret
+                // this.value = this.value.substring(0, start) +
+                //     "\t" + this.value.substring(end);
+
+                // set tab equal to 4 whitespace
+                // TODO: why the 4 white space not working?
+                // https://chatgpt.com/share/67521d6e-9700-800a-bf0f-a124d9fc9361 
+                let countOfSpace = 4;
+                // let tab = "&nbsp;"  //not working
+                // let tab = " " * countOfSpace; // will return 0, because " " is casting to 0.
+                let tab = " ".repeat(countOfSpace);
+                // let tab = "\t"; // sometimes not working.
                 this.value = this.value.substring(0, start) +
-                    "\t" + this.value.substring(end);
+                    tab + this.value.substring(end);
 
                 // put caret at right position again
                 this.selectionStart =
-                    this.selectionEnd = start + 1;
+                    this.selectionEnd = start + countOfSpace;
             }
         });
     };

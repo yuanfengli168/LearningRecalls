@@ -1,10 +1,12 @@
 # TODOs:
 
 ## Todo List: (urgent in front, keep updating...)
-- enable tab in the textArea (dec042024)
 - enable copy image in the textArea (dec042024)
+- what is selectionStart? selectionEnd?
 
 
+## finished TODOs:
+- enable tab in the textArea (dec042024)/finished on (dec052024)
 
 
 1. fix the 2 image

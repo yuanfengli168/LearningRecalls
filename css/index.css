@@ -1,6 +1,7 @@
 * {
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
 }
 
 body {
@@ -147,7 +148,8 @@ div .tags {
         overflow-y: hidden;
 
         p {
-            height: 14px;
+            height: 29px;
+            line-height: 19px;
             /* width: 100px; */
             margin-right: 8px;
             border: 1px solid;
@@ -299,6 +301,7 @@ div .quiz-item {
     #write_answer {
         width: 30%;
         margin-left: 2rem;
+        margin-bottom: 20px;
 
         textarea {
             width: 100%;
@@ -307,6 +310,7 @@ div .quiz-item {
 
         @media screen and (max-width:1100px) {
             margin: 0;
+            margin-bottom: 20px;
             width: 80vw;
             height: 20vh;
         }
